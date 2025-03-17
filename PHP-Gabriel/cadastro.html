@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,12 +7,12 @@
     <script></script>
     <title>Cadastro</title>
 </head>
-<body>
-    <div class="row gap-0 bg-info-subtle">
+<body class="row gap-0 bg-info-subtle">
+    <div>
         <div class="col"></div>
         <div class="text-center col-5 bg-primary-subtle border border-dark rounded-5 mx-auto p-2 mt-5 mb-5 pt-3 p-3">
             <h2>Login</h2>
-            <form action="" class="align-items-center">
+            <form action='http://127.0.0.1:5500/PHP-Gabriel/homeJ.html' class="align-items-center">
                 <div class="mb-3">
                     <label for="fname" class="form-label">Primeiro nome:</label><br>
                     <input type="text" id="fname" class="form-control form-control-lg" required><br>
@@ -37,7 +37,22 @@
                     <label for="birthdate" class="form-label">Data de nascimento:</label><br>
                     <input type="date" id="birthdate" class="form-control form-control-lg mx-auto w-50 d-inline-block text-center" required></label><br>
                 </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Senha:</label><br>
+                    <input type="password" id="password" class="form-control form-control-lg" required><br>
+                </div>
+                <div class="mb-3">
+                    <label for="cpassword" class="form-label">Confirmar senha:</label><br>
+                    <input type="password" id="cpassword" class="form-control form-control-lg" required><br>
+                </div>
                 <button type="submit" class="btn btn-primary">Enviar</button>
+            </form>
+        </div>
+
+        <div class="text-center col-5 bg-primary-subtle border border-dark rounded-5 mx-auto p-2 mt-5 mb-5 pt-3 p-3">
+            <h2>Esqueci minha senha</h2>
+            <form action='http://127.0.0.1:5500/PHP-Gabriel/forgotPassword.html' class="align-items-center">
+                <button type="submit" class="btn btn-primary">Recuperar</button>
             </form>
         </div>
         <div class="col"></div>

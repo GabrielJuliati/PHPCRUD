@@ -1,0 +1,23 @@
+/* Estilos personalizados */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+  }
+  
+  .navbar {
+    margin-bottom: 20px;
+  }
+  
+  .card {
+    transition: transform 0.2s;
+  }
+  
+  .card:hover {
+    transform: scale(1.05);
+  }
+  
+  .footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+  }
