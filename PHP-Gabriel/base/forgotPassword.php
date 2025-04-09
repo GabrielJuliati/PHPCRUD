@@ -13,17 +13,9 @@
             <h2>Password recover</h2>
             <form action="" class="align-items-center">
                 <div class="mb-3">
-                    <label for="email" class="form-label">E-mail:</label><br>
+                    <label for="email" class="form-label">E-mail institucional:</label><br>
                     <input type="text" id="email" class="form-control form-control-lg" required><br>
-                </div>
-                <div class="mb-3">
-                    <label for="csus" class="form-label">Cartão do SUS:</label><br>
-                    <input type="text" id="csus" class="form-control form-control-lg" required><br>
-                </div>
-                <div class="mb-3">
-                    <label for="cpf" class="form-label">CPF:</label><br>
-                    <input type="text" id="cpf" class="form-control form-control-lg" required><br>
-                </div>
+                </div>  
                 <button type="submit" class="btn btn-primary">Enviar</button>
             </form>
         </div>
