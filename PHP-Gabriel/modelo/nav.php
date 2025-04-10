@@ -11,7 +11,7 @@
                         <a class="nav-link active" aria-current="page" href="../base/home.php">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../pacientes/pacientes.php">Pacientes</a>
+                        <a class="nav-link" href="../pacientes/escolhaPaciente.php">Pacientes</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Agendamentos</a>

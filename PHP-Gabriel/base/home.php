@@ -28,7 +28,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Pacientes</h5>
                         <p class="card-text">Gerencie o cadastro de pacientes.</p>
-                        <a href="../pacientes/pacientes.php" class="btn btn-primary">Acessar</a>
+                        <a href="../pacientes/escolhaPaciente.php" class="btn btn-primary">Acessar</a>
                     </div>
                 </div>
             </div>
@@ -52,6 +52,10 @@
             </div>
         </div>
     </div>
+
+    <?php
+        include('../modelo/footer.php');
+    ?>
 </body>
 
 </html>
