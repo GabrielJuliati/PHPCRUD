@@ -14,7 +14,7 @@
                         <a class="nav-link" href="../pacientes/pacientes.php">Pacientes</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Agendamentos</a>
+                        <a class="nav-link" href="../agendamento/agendamento.php">Agendamentos</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Relatórios</a>
