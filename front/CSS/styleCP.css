@@ -24,3 +24,30 @@ body {
     bottom: 0;
     width: 100%;
   }
+
+  .navbar {
+    margin-bottom: 20px;
+  }
+  
+  .card {
+    transition: transform 0.2s;
+  }
+  
+  .card:hover {
+    transform: scale(1.05);
+  }
+  
+  .footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+  }
+
+  .navegacao {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color:rgb(223, 217, 217);
+    padding: 10px;
+    text-align: center;
+  }
