@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../CSS/styleCP.css">
     <title>Home</title>
 </head>
 
@@ -32,11 +31,11 @@
                 <form action="../home/home.php" method="post">
                     <div class="mb-3">
                         <label for="email" class="form-label">E-mail institucional:</label>
-                        <input type="email" id="email" class="form-control" required>
+                        <input type="email" id="email" class="form-control" name="email" required>
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Senha:</label>
-                        <input type="password" id="password" class="form-control" required>
+                        <input type="password" id="password" class="form-control" name="password" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Entrar</button>
                 </form>
@@ -51,7 +50,7 @@
     </div>
 
     <?php
-        include('../modelo/footer.php');
+        include('../../modelo/footer.php'); 
     ?>
 </body>
 

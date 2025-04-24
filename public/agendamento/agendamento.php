@@ -9,9 +9,9 @@
 </head>
 <body>
     
-<?php 
-    include('../modelo/nav.php');
-?>
+    <?php
+      include('../../modelo/nav.php');
+    ?>
 
     <div class="container">
         <div class="row">
@@ -46,7 +46,7 @@
         </div>
     </div>
     <?php
-        include('../modelo/footer.php');
+        include('../../modelo/footer.php');
     ?>
 
 </body>
