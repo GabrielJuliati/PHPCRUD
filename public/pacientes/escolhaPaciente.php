@@ -11,7 +11,7 @@
 
 <body style="overflow-x: hidden">
     <?php
-      include('../modelo/nav.php');
+      include('../../modelo/nav.php');
     ?>
     <div class="row">
         <div class="col-md-12 text-center mt-5">
@@ -46,7 +46,7 @@
     </div>
 
     <?php
-        include('../modelo/footer.php');
+        include('../../modelo/footer.php');
     ?>
 </body>
 

@@ -10,8 +10,8 @@
 </head>
 
 <body>
-    <?php
-      include('../modelo/nav.php');
+<?php
+      include('../../modelo/nav.php');
     ?>
 
     <div class="container mt-5">
@@ -19,7 +19,7 @@
     </div>
 
     <?php
-        include('../modelo/footer.php');
+        include('../../modelo/footer.php');
     ?>
 </body>
 
