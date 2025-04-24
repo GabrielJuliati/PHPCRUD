@@ -49,7 +49,7 @@
     </div>
 
     <?php
-        include('../modelo/footer.php');
+        include('../../modelo/footer.php');
     ?>
 </body>
 
