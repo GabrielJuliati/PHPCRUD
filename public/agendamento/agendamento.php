@@ -26,7 +26,7 @@
                         </div>
                         <div class="mt-3 text-center">
                             <label for="date" class="form-label">Data do Exame:</label>
-                            <input type="date" name="date" id="date" class="form-control">
+                            <input type="date" name="date" id="date" class="form-control" required>
                         </div>
                         <div class="mt-3 text-center">
                             <label for="type" class="form-label">Tipo do Exame:</label>
