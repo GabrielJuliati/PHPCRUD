@@ -19,18 +19,18 @@
             <div class="col">
                 <h1 class="text-center m-5">Agendamento</h1>
                 <div>
-                    <form action="">
+                    <form action="post">
                         <div class="mt-3 text-center">
-                            <label for="name" class="form-label">Nome</label>
-                            <input type="text" name="name" id="name" class="form-control" required>
+                            <label for="nome" class="form-label">Nome</label>
+                            <input type="text" name="nome" id="nome" class="form-control" required>
                         </div>
                         <div class="mt-3 text-center">
-                            <label for="date" class="form-label">Data do Exame:</label>
-                            <input type="date" name="date" id="date" class="form-control" required>
+                            <label for="data_consulta" class="form-label">Data do Exame:</label>
+                            <input type="date" name="data_consulta" id="data_consulta" class="form-control" required>
                         </div>
                         <div class="mt-3 text-center">
-                            <label for="type" class="form-label">Tipo do Exame:</label>
-                            <select id="type" name="type" class="form-select" required>
+                            <label for="tipo_exame" class="form-label">Tipo do Exame:</label>
+                            <select id="tipo_exame" name="tipo_exame" class="form-select" required>
                                 <option value="exame1">ABO - Tipo Sanguíneo</option>
                                 <option value="exame2">Dengue</option>
                                 <option value="exame3">COVID 19</option>
