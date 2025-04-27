@@ -50,6 +50,12 @@
                     </div>
                 </div>
             </div>
+
+            <?php
+            
+                   include('admHome.php');
+            ?>
+            
         </div>
     </div>
 
