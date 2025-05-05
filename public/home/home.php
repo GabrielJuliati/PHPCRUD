@@ -11,7 +11,7 @@
 
 <body>
     <?php
-      include('../modelo/nav.php');
+      include('../../modelo/nav.php');
     ?>
 
     <div class="container mt-5">
@@ -50,11 +50,17 @@
                     </div>
                 </div>
             </div>
+
+            <?php
+            
+                   include('admHome.php');
+            ?>
+            
         </div>
     </div>
 
     <?php
-        include('../modelo/footer.php');
+        include('../../modelo/footer.php');
     ?>
 </body>
 </html>
