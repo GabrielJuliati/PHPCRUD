@@ -1,3 +1,5 @@
+<?php session_start(); ?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -38,37 +40,6 @@
                 <div class="form-group mt-3">
                     <label for="cpf">CPF:</label>
                     <input type="text" class="form-control" id="cpf" name="cpf" required>
-                </div>
-                <div class="form-group mt-3">
-                    <label for="nomeMae">Nome da mãe:</label>
-                    <input type="text" class="form-control" id="nomeMae" name="nomeMae" required>
-                </div>
-                <div class="form-group mt-3">
-                    <label>Tipo sanguineo:</label>
-                    <br>
-                    <input type="radio" id="tipoSangue" name="tipoSangue" value="A+" class="form-check-input me-2">
-                    <label for="A+" class="form-check-label">A+</label>
-                    <br>
-                    <input type="radio" id="tipoSangue" name="tipoSangue" value="A-" class="form-check-input me-2">
-                    <label for="A-" class="form-check-label">A-</label>
-                    <br>
-                    <input type="radio" id="tipoSangue" name="tipoSangue" value="B+" class="form-check-input me-2">
-                    <label for="B+" class="form-check-label">B+</label>
-                    <br>
-                    <input type="radio" id="tipoSangue" name="tipoSangue" value="B-" class="form-check-input me-2">
-                    <label for="B-" class="form-check-label">B-</label>
-                    <br>
-                    <input type="radio" id="tipoSangue" name="tipoSangue" value="O+" class="form-check-input me-2">
-                    <label for="O+" class="form-check-label">O+</label>
-                    <br>
-                    <input type="radio" id="tipoSangue" name="tipoSangue" value="O-" class="form-check-input me-2">
-                    <label for="O-" class="form-check-label">O-</label>
-                    <br>
-                    <input type="radio" id="tipoSangue" name="tipoSangue" value="AB+" class="form-check-input me-2">
-                    <label for="AB+" class="form-check-label">AB+</label>
-                    <br>
-                    <input type="radio" id="tipoSangue" name="tipoSangue" value="AB-" class="form-check-input me-2">
-                    <label for="AB-" class="form-check-label">AB-</label>
                 </div>
                 <div class="form-group mt-3">
                     <label for="observacoes">Observações do paciente:</label>
