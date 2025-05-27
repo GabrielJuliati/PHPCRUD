@@ -2,7 +2,7 @@
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">Alunos</h5>
-            <p class="card-text">Cadastro de novos alunos no sistema.</p>
+            <p class="card-text">Cadastro de novos usuários no sistema.</p>
             <a href="../cadastro/cadastro.php" class="btn btn-primary">Acessar</a>
         </div>
     </div>
