@@ -16,12 +16,18 @@
                 <li class="nav-item">
                     <a class="nav-link" href="../relatorio/relatatorio.php">Relatórios</a>
                 </li>
+
+                <?php
+                if (isset($_SESSION["rol"]) && $_SESSION["rol"] == 'ADM') {
+                    include('admNav.php');
+                }
+                ?>
             </ul>
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link btn btn-danger btn-sm px-4 py-1" href="../acesso/login.php">
-                        <i class="fas fa-sign-out-alt"></i> Sair
-                    </a>
+                    <form action="../acesso/login.php" class="nav-link btn btn-danger btn-sm px-4 py-1" method="post">
+                        <button type="submit" name="sair" style="background-color: transparent; border: none; padding: 0; margin: 0; color: #fff">Sair</button>
+                    </form>
                 </li>
             </ul>
         </div>

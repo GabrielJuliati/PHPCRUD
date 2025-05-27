@@ -1,3 +1,5 @@
+<?php session_start(); ?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -11,7 +13,7 @@
 
 <body>
     <?php
-      include('../../modelo/nav.php');
+    include('../../modelo/nav.php');
     ?>
 
     <div class="container mt-5">

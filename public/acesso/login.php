@@ -26,9 +26,16 @@
             </div>
         </div>
 
+        <?php
+        if (isset($_GET['erro'])) { ?>
+            <div class="alert alert-danger">
+                <?php echo $_GET['erro']; ?>
+            </div>
+        <?php } ?>
+
         <div class="row">
             <div class="col-md-6 offset-md-3">
-                <form action="../home/home.php" method="post">
+                <form action="controller/usuarioController.php" method="post">
                     <div class="mb-3">
                         <label for="email" class="form-label">E-mail institucional:</label>
                         <input type="email" id="email" class="form-control" name="email" required>
@@ -37,7 +44,7 @@
                         <label for="password" class="form-label">Senha:</label>
                         <input type="password" id="password" class="form-control" name="password" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Entrar</button>
+                    <button type="submit" name="login" class="btn btn-primary">Entrar</button>
                 </form>
             </div>
         </div>
@@ -50,7 +57,7 @@
     </div>
 
     <?php
-        include('../../modelo/footer.php'); 
+    include('../../modelo/footer.php');
     ?>
 </body>
 
