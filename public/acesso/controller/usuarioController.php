@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require __DIR__ . '/../dao/connection.php';
+require __DIR__ . '../../../connection/Connection.php';
 require __DIR__ . '/../../../modelo/usuario.php';
 require __DIR__ . '/../dao/usuarioDao.php';
 
