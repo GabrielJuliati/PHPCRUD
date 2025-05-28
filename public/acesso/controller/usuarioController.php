@@ -73,7 +73,7 @@ if (isset($_POST['login'])) {
             exit;
         }
     } else {
-        $erro = "Usuário ou senha não encontrado.";
+        $erro = "Usuário ou senha incorretos.";
         header("Location: ../login.php?erro=$erro");
         exit;
     }
