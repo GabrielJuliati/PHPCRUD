@@ -24,10 +24,22 @@
                 ?>
             </ul>
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <form action="../acesso/login.php" class="nav-link btn btn-danger btn-sm px-4 py-1" method="post">
-                        <button type="submit" name="sair" style="background-color: transparent; border: none; padding: 0; margin: 0; color: #fff">Sair</button>
-                    </form>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle btn btn-primary text-white" href="" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <?php echo $_SESSION["nome"]; ?>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="nav-link btn btn-info btn-sm px-4 py-1 mx-2" style="color: black" href="../acesso/resetPassword.php">Alterar Senha</a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-danger btn-sm px-4 py-1 mx-2" style="color: black" href="../../public/logout/logout.php">Sair</a>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </div>
