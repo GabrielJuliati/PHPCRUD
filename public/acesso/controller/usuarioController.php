@@ -17,10 +17,10 @@ if (isset($_POST['cadastrar'])) {
 
     $senha = $_POST["password"];
     $confirmarSenha = $_POST["pyes"];
-    $erro = "";
 
     if ($senha != $confirmarSenha) {
-        echo "Error: Erro no recebimento de senha iguais!";
+        $_SESSION['erro'] = "As senhas não são iguais.";
+        header("Location: /PHPCRUD/public/cadastro/cadastro.php");
         exit;
     } else {
         $usuario->setName($_POST['nome']);
@@ -31,7 +31,10 @@ if (isset($_POST['cadastrar'])) {
 
         $usuario->setRol($_POST['tipoUsuario']);
         $usuarioDao->inserir($usuario);
+
+        $_SESSION['sucesso'] = "Usuário cadastrado com sucesso!";
         header("Location: /PHPCRUD/public/cadastro/cadastro.php");
+        exit;
     }
 }
 
