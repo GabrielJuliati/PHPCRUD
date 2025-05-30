@@ -47,7 +47,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Agendamentos</h5>
                         <p class="card-text">Agende consultas e procedimentos.</p>
-                        <a href="../agendamento/agendamento.php" class="btn btn-primary">Acessar</a>
+                        <a href="../agendamento/gestãoAgendamento.php" class="btn btn-primary">Acessar</a>
                     </div>
                 </div>
             </div>
