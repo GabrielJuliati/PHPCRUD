@@ -249,6 +249,11 @@ try {
             </table>
         </div>
     </div>
+
+    <?php
+        include('../../modelo/footer.php');
+    ?>
+
 </body>
 
 </html>

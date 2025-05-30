@@ -14,7 +14,7 @@
                     <a class="nav-link" href="../agendamento/agendamento.php">Agendamentos</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="../relatorio/relatatorio.php">Relatórios</a>
+                    <a class="nav-link" href="../relatorio/relatorio.php">Relatórios</a>
                 </li>
 
                 <?php
