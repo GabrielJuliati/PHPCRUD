@@ -19,7 +19,7 @@
 
     <div class="row mt-4">
         <div class="col"></div>
-        <div class="col">
+        <div class="col mt-5">
 
             <?php if (isset($_SESSION['sucesso'])) { ?>
                 <div class="alert alert-success">
@@ -35,28 +35,14 @@
                 </div>
             <?php } ?>
 
-            <h2>Cadastro de novos usuários</h2>
-            <form action="../acesso/controller/usuarioController.php" method="post">
-                <label class="mt-3">O usuario sera um professor ou um aluno?</label>
-                <div class="form-check mt-3">
-                    <input class="form-check-input" type="radio" name="tipoUsuario" id="aluno" value="DEFAULT" checked>
-                    <label class="form-check-label" for="aluno">Aluno(Sem acesso administrador)</label>
-                </div>
-                <div class="form-check mt-3">
-                    <input class="form-check-input" type="radio" name="tipoUsuario" id="professor" value="ADM">
-                    <label class="form-check-label" for="professor">Professor(Com acesso administrador)</label>
-                </div>
-
+            <h2>Troca de senha.</h2>
+            <form action="controller/usuarioController.php" method="post">
                 <div class="form-group mt-3">
-                    <label for="nome">Nome:</label>
-                    <input type="text" class="form-control" id="nome" name="nome" required>
+                    <label for="sa">Senha atual:</label>
+                    <input type="text" class="form-control" id="sa" name="passwordAtual" pattern=".{8,}" title="A senha deve ter pelo menos 8 caracteres" required>
                 </div>
                 <div class="form-group mt-3">
-                    <label for="mail">Email institucional:</label>
-                    <input type="email" class="form-control" id="mail" name="mail" required>
-                </div>
-                <div class="form-group mt-3">
-                    <label for="s">Senha para primeiro acesso:</label>
+                    <label for="s">Nova senha:</label>
                     <input type="text" class="form-control" id="s" name="password" pattern=".{8,}" title="A senha deve ter pelo menos 8 caracteres" required>
                 </div>
                 <div class="form-group mt-3">
@@ -64,16 +50,16 @@
                     <input type="text" class="form-control" id="sc" name="pyes" pattern=".{8,}" title="A senha deve ter pelo menos 8 caracteres" required>
                 </div>
                 <div class="d-flex justify-content-center mt-4">
-                    <button type="submit" name="cadastrar" class="btn btn-primary">Criar</button>
+                    <button type="submit" name="alterar" class="btn btn-primary">Alterar</button>
                 </div>
             </form>
         </div>
         <div class="col"></div>
-
-        <?php
-        include('../../modelo/footer.php');
-        ?>
     </div>
+
+    <?php
+    include('../../modelo/footer.php');
+    ?>
 </body>
 
 </html>
