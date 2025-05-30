@@ -16,12 +16,30 @@
                 <li class="nav-item">
                     <a class="nav-link" href="../relatorio/relatatorio.php">Relatórios</a>
                 </li>
+
+                <?php
+                if (isset($_SESSION["rol"]) && $_SESSION["rol"] == 'ADM') {
+                    include('admNav.php');
+                }
+                ?>
             </ul>
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link btn btn-danger btn-sm px-4 py-1" href="../acesso/login.php">
-                        <i class="fas fa-sign-out-alt"></i> Sair
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle btn btn-primary text-white" href="" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <?php echo $_SESSION["nome"]; ?>
                     </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="nav-link btn btn-info btn-sm px-4 py-1 mx-2" style="color: black" href="../acesso/resetPassword.php">Alterar Senha</a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-danger btn-sm px-4 py-1 mx-2" style="color: black" href="../../public/logout/logout.php">Sair</a>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </div>
