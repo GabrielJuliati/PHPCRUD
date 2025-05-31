@@ -24,13 +24,16 @@ if(isset($_POST['cadastrar'])) {
     header("Location: ../agendamentos.php");
 }
 
-if(isset($_POST['editar?id'])) { 
+if(isset($_POST['atualizar'])) { 
+    $id = $_POST['id'];
     $agendamento->setId($id);
     $agendamento->setNome($_POST['nome']);
-    $agendamento->setDataConsulta($_POST['dataConsulta']);
-    $agendamento->setTipoExame($_POST['tipoExame']);
+    $agendamento->setDataConsulta($_POST['data_consulta']);
+    $agendamento->setTipoExame($_POST['tipo_exame']);
     
-    $resultado = $agendamentoDao->atualizar($agendamento);
+    $agendamentoDao->atualizar($agendamento);
+    header("Location: ../agendamentos.php");
+    exit();
 }
 
 if(isset($_POST['excluir?id'])) {

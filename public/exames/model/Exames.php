@@ -2,10 +2,30 @@
 class Exames{
     private $id;
     private $nomeExame;
+    private $descricao;
     
-    function __construct($id, $nome){
+    public function getId() {
+        return $this->id;
+    }
+
+    public function setId($id) {
         $this->id = $id;
-        $this->nomeExame = $nome;
+    }
+
+    public function getNomeExame() {
+        return $this->nomeExame;
+    }
+
+    public function setNomeExame($nomeExame) {
+        $this->nomeExame = $nomeExame;
+    }
+
+    public function getDescricao() {
+        return $this->descricao;
+    }
+
+    public function setDescricao($descricao) {
+        $this->descricao = $descricao;
     }
 }
 ?>
