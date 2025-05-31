@@ -56,8 +56,8 @@
                             </select>
                         </div>
                         <div class="mt-3 text-center">
-                            <button type="submit" name="<?= $agendamentoParaEditar ? 'atualizar' : 'cadastrar' ?>" class="btn btn-success">
-                                <?= $agendamentoParaEditar ? 'Atualizar' : 'Cadastrar' ?>
+                            <button type="submit" name="atualizar" class="btn btn-success">
+                                Atualizar
                             </button>
                         </div>
                     </form>
