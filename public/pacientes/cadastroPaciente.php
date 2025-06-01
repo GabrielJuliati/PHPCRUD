@@ -1,4 +1,9 @@
-<?php session_start(); ?>
+<?php session_start(); 
+
+    $sucesso = $_SESSION['sucesso'] ?? null;
+    $erro    = $_SESSION['erro'] ?? null;
+    unset($_SESSION['sucesso'], $_SESSION['erro']);
+?>
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -21,7 +26,22 @@
         <div class="col"></div>
         <div class="col">
             <h2>Cadastro de Pacientes</h2>
-            <form action="cadastroPaciente.php" method="post">
+
+            <?php if ($sucesso): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <?= htmlspecialchars($sucesso, ENT_QUOTES, 'UTF-8') ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($erro): ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <?= htmlspecialchars($erro, ENT_QUOTES, 'UTF-8') ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
+            <form action="controller/pacienteController.php" method="post">
                 <div class="form-group mt-3">
                     <label for="nome">Nome:</label>
                     <input type="text" class="form-control" id="nome" name="nome" required>
@@ -44,10 +64,10 @@
                 </div>
                 <div class="form-group mt-3">
                     <label for="observacoes">Observações do paciente:</label>
-                    <textarea type="text" class="form-control" id="observacoes" name="observacoes" required></textarea>
+                    <textarea type="text" class="form-control" id="observacoes" name="observacoes"></textarea>
                 </div>
                 <div class="d-flex justify-content-center mt-4">
-                    <button type="submit" class="btn btn-primary">Salvar</button>
+                    <button name="cadastrar" type="submit" class="btn btn-primary">Salvar</button>
                 </div>
             </form>
         </div>
