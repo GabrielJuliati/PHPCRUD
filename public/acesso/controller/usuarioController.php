@@ -10,206 +10,150 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 $usuario = new Usuario();
-
 $usuarioDao = new UsuarioDao();
 
 if (isset($_POST['cadastrar'])) {
+    $nome = trim($_POST['nome']);
+    $email = trim($_POST['email']);
+    $senha = $_POST['password'];
+    $confirmar = $_POST['pyes'];
+    $rol = $_POST['tipoUsuario'];
 
-    $senha = $_POST["password"];
-    $confirmarSenha = $_POST["pyes"];
-
-    if ($senha != $confirmarSenha) {
+    if ($senha !== $confirmar) {
         $_SESSION['erro'] = "As senhas não são iguais.";
-        header("Location: /PHPCRUD/public/cadastro/cadastro.php");
-        exit;
     } else {
-        $usuario->setName($_POST['nome']);
-        $usuario->setEmailInstitucional($_POST['mail']);
+        $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
+        $sucesso = $usuarioDao->inserir($nome, $email, $senhaHash, $rol);
+        if ($sucesso) {
+            $_SESSION['sucesso'] = "Usuário cadastrado com sucesso!";
+        } else {
+            $_SESSION['erro'] = "Erro ao cadastrar usuário.";
+        }
+    }
+    header("Location: ../../cadastro/cadastro.php");
+    exit;
+}
 
-        $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
-        $usuario->setPassword($senha_hash);
+if (isset($_POST['excluir'])) {
+    $idExcluir = (int) $_POST['excluir'];
 
-        $usuario->setRol($_POST['tipoUsuario']);
-        $usuarioDao->inserir($usuario);
-
-        $_SESSION['sucesso'] = "Usuário cadastrado com sucesso!";
-        header("Location: /PHPCRUD/public/cadastro/cadastro.php");
+    // Garante que não pode excluir a si mesmo
+    if ($idExcluir === $_SESSION['id']) {
+        $_SESSION['erro'] = "Você não pode excluir a si mesmo.";
+        header("Location: ../../cadastro/cadastro.php");
         exit;
     }
+
+    if ($usuarioDao->deleteById($idExcluir)) {
+        $_SESSION['sucesso'] = "Usuário excluído com sucesso!";
+    } else {
+        $_SESSION['erro'] = "Falha ao excluir usuário.";
+    }
+    header("Location: ../../cadastro/cadastro.php");
+    exit;
 }
 
-function listar()
-{
+if (isset($_POST['atualizar'])) {
+    $id       = (int) $_POST['id'];
+    $nome     = trim($_POST['nome']);
+    $email    = trim($_POST['email']);
+    $rol      = $_POST['tipoUsuario'];
 
-    /*$usuarioDao = new UsuarioDao();
-
-    $lista = $usuarioDao->read();
-
-    foreach ($lista as $l) {
-        echo "<tr>
-            <td> {$l->getId()} </td>
-            <td> {$l->getNome()} </td>
-            <td> {$l->getEndereco()} </td>
-            <td> {$l->getDocumento()} </td>
-            <td> 
-                <a href='index.php?editar={$l->getId()}'> <i class='bi bi-pencil-square'></i>Editar</a> 
-                <a href='#'> <i class='bi bi-trash3'></i>Excluir</a> 
-            </td>
-        </tr>";
-    }*/
+    // Só atualiza nome, email e rol. Não mexe em senha aqui.
+    $sucesso = $usuarioDao->update($id, $nome, $email, $rol);
+    if ($sucesso) {
+        $_SESSION['sucesso'] = "Usuário atualizado com sucesso!";
+    } else {
+        $_SESSION['erro'] = "Erro ao atualizar usuário.";
+    }
+    header("Location: ../../cadastro/cadastro.php");
+    exit;
 }
 
-$connection = ConnectionFactory::getConnection();
 
 if (isset($_POST['login'])) {
-    // Obtenha os dados do formulário de login
-    $email = $_POST["email"];
-    $senha = $_POST["password"];
+    $email = $_POST['email'];
+    $senha = $_POST['password'];
 
-    $consulta = "SELECT * FROM usuario WHERE email = :email";
-
-    $stmt = $connection->prepare($consulta);
-    $stmt->bindValue(':email', $email, PDO::PARAM_STR);
-    $stmt->execute();
-
-    // Verifique se a consulta retornou um resultado
-    if ($stmt->rowCount() > 0) {
-
-        $linha = $stmt->fetch();
-        if (!password_verify($senha, $linha["senha"])) {
+    $usuario = $usuarioDao->findByEmail($email);
+    if (!$usuario || !password_verify($senha, $usuario['senha'])) {
         $_SESSION['erro'] = "Usuário ou senha incorretos.";
         header("Location: ../login.php");
         exit;
     }
 
-        // Se chegou aqui, senha é correta
-        $_SESSION["nome"] = $linha["nome"];
-        $_SESSION["rol"] = $linha["rol"];
-        $_SESSION["email"] = $linha["email"];
+    $_SESSION["id"] = $usuario["id"];
+    $_SESSION['nome'] = $usuario['nome'];
+    $_SESSION['rol']  = $usuario['rol'];
+    $_SESSION['email'] = $usuario['email'];
 
-        header("Location: ../../home/home.php");
-        exit;
-    } else {
-        $_SESSION['erro'] = "Usuário ou senha incorretos.";
-        header("Location: ../login.php");
-        exit;
-    }
+    header("Location: ../../home/home.php");
+    exit;
 }
 
+
 if (isset($_POST['reset'])) {
+    $email = $_POST['email'];
+    $usuario = $usuarioDao->findByEmail($email);
 
-    $email = $_POST["email"];
-
-    $consulta = "SELECT * FROM usuario WHERE email = :email";
-
-    $stmt = $connection->prepare($consulta);
-    $stmt->bindValue(':email', $email, PDO::PARAM_STR);
-    $stmt->execute();
-
-    if ($stmt->rowCount() > 0) {
-        $usuario = $stmt->fetch();
-
-        $nome = $usuario['nome'];
-        $senha_provisoria = "SPPUB@" . $nome;
-
-        // Hash da senha provisória
-        $senha_hash = password_hash($senha_provisoria, PASSWORD_DEFAULT);
-
-        // Atualiza a senha no banco
-        $update = "UPDATE usuario SET senha = :senha WHERE email = :email";
-        $stmt_update = $connection->prepare($update);
-        $stmt_update->bindValue(':senha', $senha_hash, PDO::PARAM_STR);
-        $stmt_update->bindValue(':email', $email, PDO::PARAM_STR);
-        $stmt_update->execute();
-
-        // Envia o e-mail com PHPMailer
-        $mail = new PHPMailer(true);
-
-        try {
-            // Configurações do servidor SMTP
-            $mail->isSMTP();
-            $mail->Host = 'smtp.gmail.com';
-            $mail->SMTPAuth = true;
-            $mail->Username = 'sps.ti.no.reply@gmail.com';  // SEU EMAIL
-            $mail->Password = 'xdop biyy tpbx wheu';      // SUA APP PASSWORD
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port = 587;
-            $mail->CharSet = 'UTF-8';
-
-            // Remetente e destinatário
-            $mail->setFrom('sps.ti.no.reply@gmail.com', 'Sistema SPS');
-            $mail->addAddress($email, $nome);
-
-            // Conteúdo
-            $mail->isHTML(false);
-            $mail->Subject = "Recuperação de Senha - Sistema Positivo de Saúde";
-            $mail->Body = "Olá $nome,\n\nSua nova senha provisória é: $senha_provisoria\n\nPor favor, altere sua senha após o login.";
-
-            $mail->send();
-
-            $_SESSION['sucesso'] = "Senha provisória enviada para o e-mail institucional.";
-            header("Location: ../forgotPassword.php");
-            exit;
-
-        } catch (Exception $e) {
-            $_SESSION['erro'] = "Erro ao enviar e-mail: {$mail->ErrorInfo}";
-            header("Location: ../forgotPassword.php");
-            exit;
-        }
-
-    } else {
+    if (!$usuario) {
         $_SESSION['erro'] = "E-mail não cadastrado.";
         header("Location: ../forgotPassword.php");
         exit;
     }
+
+    $nome = $usuario['nome'];
+    $senha_provisoria = "SPPUB@" . $nome;
+    $senha_hash = password_hash($senha_provisoria, PASSWORD_DEFAULT);
+
+    $usuarioDao->updatePassword($email, $senha_hash);
+
+    // Envio de e-mail
+    $mail = new PHPMailer(true);
+    try {
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'sps.ti.no.reply@gmail.com';
+        $mail->Password = 'rhjm pakk gtfg cukg';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+        $mail->CharSet = 'UTF-8';
+
+        $mail->setFrom('sps.ti.no.reply@gmail.com', 'Sistema SPS');
+        $mail->addAddress($email, $nome);
+        $mail->isHTML(false);
+        $mail->Subject = "Recuperação de Senha - Sistema Positivo de Saúde";
+        $mail->Body = "Olá $nome,\n\nSua nova senha provisória é: $senha_provisoria\n\nPor favor, altere sua senha após o login.";
+
+        $mail->send();
+        $_SESSION['sucesso'] = "Senha provisória enviada para o e-mail institucional.";
+    } catch (Exception $e) {
+        $_SESSION['erro'] = "Erro ao enviar e-mail: {$mail->ErrorInfo}";
+    }
+    header("Location: ../forgotPassword.php");
+    exit;
 }
 
 if (isset($_POST['alterar'])) {
-
-    $email = $_SESSION["email"];  // Ajuste se armazenar email na sessão!
+    $email = $_SESSION['email'];
     $senha_atual = $_POST['passwordAtual'];
-    $nova_senha = $_POST['password'];
-    $confirmar_senha = $_POST['pyes'];
+    $nova = $_POST['password'];
+    $confirmar = $_POST['pyes'];
 
-    if ($nova_senha !== $confirmar_senha) {
+    if ($nova !== $confirmar) {
         $_SESSION['erro'] = "As senhas não coincidem.";
-        header("Location: ../resetPassword.php");
-        exit;
-    }
-
-    // Pega senha atual
-    $consulta = "SELECT senha FROM usuario WHERE email = :email";
-    $stmt = $connection->prepare($consulta);
-    $stmt->bindValue(':email', $email, PDO::PARAM_STR);
-    $stmt->execute();
-
-    if ($stmt->rowCount() > 0) {
-        $usuario = $stmt->fetch();
-
-        if (!password_verify($senha_atual, $usuario['senha'])) {
-            $_SESSION['erro'] = "Senha atual incorreta.";
-            header("Location: ../resetPassword.php");
-            exit;
-        }
-
-        // Atualiza nova senha
-        $senha_hash = password_hash($nova_senha, PASSWORD_DEFAULT);
-        $update = "UPDATE usuario SET senha = :senha WHERE email = :email";
-
-        $stmt_update = $connection->prepare($update);
-        
-        $stmt_update->bindValue(':senha', $senha_hash, PDO::PARAM_STR);
-        $stmt_update->bindValue(':email', $email, PDO::PARAM_STR);
-        $stmt_update->execute();
-
-        $_SESSION['sucesso'] = "Senha alterada com sucesso!";
-        header("Location: ../resetPassword.php");
-        exit;
-
     } else {
-        $_SESSION['erro'] = "Erro de seção.";
-        header("Location: ../login.php");
-        exit;
+        $usuario = $usuarioDao->findByEmail($email);
+        if (!$usuario || !password_verify($senha_atual, $usuario['senha'])) {
+            $_SESSION['erro'] = "Senha atual incorreta.";
+        } else {
+            $hash = password_hash($nova, PASSWORD_DEFAULT);
+            $usuarioDao->updatePassword($email, $hash);
+            $_SESSION['sucesso'] = "Senha alterada com sucesso!";
+        }
     }
+    header("Location: ../resetPassword.php");
+    exit;
 }
 ?>
