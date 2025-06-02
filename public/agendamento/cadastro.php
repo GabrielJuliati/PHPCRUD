@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="../CSS/styleCP.css">
-    <title>Document</title>
+    <title>Cadastrar Agendamento</title>
 </head>
 <body>
     
@@ -22,7 +22,7 @@
             <div class="col">
                 <h1 class="text-center m-5">Agendamento</h1>
                 <div>
-                    <form action="post">
+                    <form action="controller/AgendamentoController.php" method="post">
                         <div class="mt-3 text-center">
                             <label for="nome" class="form-label">Nome</label>
                             <input type="text" name="nome" id="nome" class="form-control" required>
@@ -34,13 +34,13 @@
                         <div class="mt-3 text-center">
                             <label for="tipo_exame" class="form-label">Tipo do Exame:</label>
                             <select id="tipo_exame" name="tipo_exame" class="form-select" required>
-                                <option value="exame1">ABO - Tipo Sanguíneo</option>
-                                <option value="exame2">Dengue</option>
-                                <option value="exame3">COVID 19</option>
+                                <option value="ABO - Tipo Sanguíneo">ABO - Tipo Sanguíneo</option>
+                                <option value="Dengue">Dengue</option>
+                                <option value="COVID 19">COVID 19</option>
                             </select>
                         </div>
                         <div class="mt-3 text-center">
-                            <input type="submit" value="Enviar" class="btn btn-primary">
+                            <input type="submit" name="cadastrar" value="Cadastrar" class="btn btn-primary">
                         </div>
                     </form>
                 </div>
