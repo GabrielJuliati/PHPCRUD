@@ -57,7 +57,7 @@ public class FileHandlerExame {
         int maxId = 0;
 
         for (String linha : linhas) {
-            if (linha.startsWith("INSERT INTO e xames")) {
+            if (linha.startsWith("INSERT INTO exames")) {
                 try {
                     String valores = linha.substring(linha.indexOf("VALUES (") + 8, linha.lastIndexOf(")"));
                     String[] partes = valores.split(",\\s*");
