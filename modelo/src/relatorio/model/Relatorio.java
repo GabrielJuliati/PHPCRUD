@@ -1,77 +1,44 @@
 package relatorio.model;
 
-import java.io.Serializable;
-import java.time.LocalDate;
-
-public class Relatorio implements Serializable {
-    private static final long serialVersionUID = 1L;
-
+public class Relatorio {
     private int id;
-    private String nomePaciente;
+    private Paciente paciente;
     private String tipoExame;
-    private LocalDate dataExame;
-    private String resultado;
-    private String observacao;
+    private String dataExame;
 
-    public Relatorio() {
-    }
-
-    public Relatorio(String nomePaciente, String tipoExame, LocalDate dataExame, String resultado, String observacao) {
-        this.nomePaciente = nomePaciente;
+    public Relatorio(int id, Paciente paciente, String tipoExame, String dataExame) {
+        this.id = id;
+        this.paciente = paciente;
         this.tipoExame = tipoExame;
         this.dataExame = dataExame;
-        this.resultado = resultado;
-        this.observacao = observacao;
     }
 
-    // Getters e setters
     public int getId() {
         return id;
     }
-    public void setId(int id) {
-        this.id = id;
+
+    public Paciente getPaciente() {
+        return paciente;
     }
-    public String getNomePaciente() {
-        return nomePaciente;
-    }
-    public void setNomePaciente(String nomePaciente) {
-        this.nomePaciente = nomePaciente;
-    }
+
     public String getTipoExame() {
         return tipoExame;
     }
+
     public void setTipoExame(String tipoExame) {
         this.tipoExame = tipoExame;
     }
-    public LocalDate getDataExame() {
+
+    public String getDataExame() {
         return dataExame;
     }
-    public void setDataExame(LocalDate dataExame) {
+
+    public void setDataExame(String dataExame) {
         this.dataExame = dataExame;
-    }
-    public String getResultado() {
-        return resultado;
-    }
-    public void setResultado(String resultado) {
-        this.resultado = resultado;
-    }
-    public String getObservacao() {
-        return observacao;
-    }
-    public void setObservacao(String observacao) {
-        this.observacao = observacao;
     }
 
     @Override
     public String toString() {
-        return "Relatorio{" +
-                "id=" + id +
-                ", nomePaciente='" + nomePaciente + '\'' +
-                ", tipoExame='" + tipoExame + '\'' +
-                ", dataExame=" + dataExame +
-                ", resultado='" + resultado + '\'' +
-                ", observacao='" + observacao + '\'' +
-                '}';
+        return id + " - " + paciente.getNome() + " - " + tipoExame + " - " + dataExame;
     }
 }
-

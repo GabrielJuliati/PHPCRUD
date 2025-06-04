@@ -6,25 +6,33 @@ import relatorio.model.Relatorio;
 import java.util.List;
 
 public class RelatorioService {
-    private RelatorioDao dao = new RelatorioDao();
+    private RelatorioDao relatorioDao;
 
-    public List<Relatorio> obterTodos() {
-        return dao.listarTodos();
+    public RelatorioService(RelatorioDao relatorioDao) {
+        this.relatorioDao = relatorioDao;
     }
 
-    public Relatorio obterPorId(int id) {
-        return dao.buscarPorId(id);
+    public void adicionar(Relatorio relatorio) {
+        relatorioDao.adicionar(relatorio);
     }
 
-    public void criarRelatorio(Relatorio relatorio) {
-        dao.adicionar(relatorio);
+    public List<Relatorio> listar() {
+        return relatorioDao.listarTodos();
     }
 
-    public void atualizarRelatorio(Relatorio relatorio) {
-        dao.atualizar(relatorio);
+    public Relatorio buscarPorId(int id) {
+        return relatorioDao.buscarPorId(id);
     }
 
-    public void deletarRelatorio(int id) {
-        dao.excluir(id);
+    public void editar(Relatorio relatorio, String novoTipoExame, String novaDataExame) {
+        if (relatorio != null) {
+            relatorio.setTipoExame(novoTipoExame);
+            relatorio.setDataExame(novaDataExame);
+            relatorioDao.atualizar(relatorio); // isso já salva no arquivo
+        }
+    }
+
+    public void excluir(Relatorio relatorio) {
+        relatorioDao.excluir(relatorio); // também salva no arquivo
     }
 }

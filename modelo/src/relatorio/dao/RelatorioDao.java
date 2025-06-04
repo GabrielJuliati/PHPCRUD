@@ -1,31 +1,26 @@
 package relatorio.dao;
 
-import relatorio.model.Relatorio;
-
-import java.util.ArrayList;
 import java.util.List;
+
+import relatorio.model.Relatorio;
+import relatorio.service.FileHandlerRelatorio;
 
 public class RelatorioDao {
     private List<Relatorio> relatorios;
-    private int contadorId;
+    private FileHandlerRelatorio fileHandler;
 
     public RelatorioDao() {
-        this.relatorios = FileHandlerRelatorio.carregar();
-        this.contadorId = calcularUltimoId() + 1;
+        fileHandler = new FileHandlerRelatorio();
+        relatorios = fileHandler.carregarRelatorios(); // carregar ao iniciar
     }
 
-    private int calcularUltimoId() {
-        int maxId = 0;
-        for (Relatorio r : relatorios) {
-            if (r.getId() > maxId) {
-                maxId = r.getId();
-            }
-        }
-        return maxId;
+    public void adicionar(Relatorio relatorio) {
+        relatorios.add(relatorio);
+        fileHandler.salvarRelatorios(relatorios);
     }
 
     public List<Relatorio> listarTodos() {
-        return new ArrayList<>(relatorios);
+        return relatorios;
     }
 
     public Relatorio buscarPorId(int id) {
@@ -37,26 +32,18 @@ public class RelatorioDao {
         return null;
     }
 
-    public void adicionar(Relatorio relatorio) {
-        relatorio.setId(contadorId++);
-        relatorios.add(relatorio);
-        FileHandlerRelatorio.salvar(relatorios);
-    }
-
     public void atualizar(Relatorio relatorioAtualizado) {
-        Relatorio relatorio = buscarPorId(relatorioAtualizado.getId());
-        if (relatorio != null) {
-            relatorio.setNomePaciente(relatorioAtualizado.getNomePaciente());
-            relatorio.setTipoExame(relatorioAtualizado.getTipoExame());
-            relatorio.setDataExame(relatorioAtualizado.getDataExame());
-            relatorio.setResultado(relatorioAtualizado.getResultado());
-            relatorio.setObservacao(relatorioAtualizado.getObservacao());
-            FileHandlerRelatorio.salvar(relatorios);
+        for (int i = 0; i < relatorios.size(); i++) {
+            if (relatorios.get(i).getId() == relatorioAtualizado.getId()) {
+                relatorios.set(i, relatorioAtualizado);
+                break;
+            }
         }
+        fileHandler.salvarRelatorios(relatorios);
     }
 
-    public void excluir(int id) {
-        relatorios.removeIf(r -> r.getId() == id);
-        FileHandlerRelatorio.salvar(relatorios);
+    public void excluir(Relatorio relatorio) {
+        relatorios.remove(relatorio);
+        fileHandler.salvarRelatorios(relatorios);
     }
 }

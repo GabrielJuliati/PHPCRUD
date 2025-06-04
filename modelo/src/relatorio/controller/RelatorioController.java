@@ -1,39 +1,33 @@
 package relatorio.controller;
 
-import relatorio.model.Relatorio;
-import relatorio.service.RelatorioService;
-
-import java.time.LocalDate;
 import java.util.List;
 
+import relatorio.model.Relatorio;
+import relatorio.service.RelatorioService;
+import relatorio.dao.RelatorioDao;
+
 public class RelatorioController {
-    private RelatorioService service = new RelatorioService();
+    private RelatorioService service;
 
-    public void executar() {
-        // Criar relatório
-        Relatorio r1 = new Relatorio("Lucas", "Sangue", LocalDate.now(), "Negativo", "Sem observações");
-        service.criarRelatorio(r1);
-
-        // Listar todos
-        List<Relatorio> relatorios = service.obterTodos();
-        relatorios.forEach(System.out::println);
-
-        // Atualizar relatório
-        r1.setResultado("Positivo");
-        service.atualizarRelatorio(r1);
-
-        // Buscar por id
-        Relatorio r2 = service.obterPorId(r1.getId());
-        System.out.println("Após atualização: " + r2);
-
-        // Excluir
-        service.deletarRelatorio(r1.getId());
-
-        System.out.println("Após exclusão, lista:");
-        service.obterTodos().forEach(System.out::println);
+    public RelatorioController() {
+        this.service = new RelatorioService(new RelatorioDao());
     }
 
-    public static void main(String[] args) {
-        new RelatorioController().executar();
+    public void adicionarRelatorio(Relatorio relatorio) {
+        service.adicionar(relatorio);
+    }
+
+    public List<Relatorio> listarRelatorios() {
+        return service.listar();
+    }
+
+    public void editarRelatorio(int id, String novoTipoExame, String novaDataExame) {
+        Relatorio relatorio = service.buscarPorId(id);
+        service.editar(relatorio, novoTipoExame, novaDataExame);
+    }
+
+    public void excluirRelatorio(int id) {
+        Relatorio relatorio = service.buscarPorId(id);
+        service.excluir(relatorio);
     }
 }
