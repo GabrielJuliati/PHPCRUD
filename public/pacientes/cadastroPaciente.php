@@ -1,4 +1,4 @@
-<?php session_start(); 
+<?php session_start();
 
     $sucesso = $_SESSION['sucesso'] ?? null;
     $erro    = $_SESSION['erro'] ?? null;
@@ -7,76 +7,134 @@
 
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Pacientes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="../CSS/styleCP.css">
-    <title>Cadastro de Pacientes</title>
 </head>
-
 <body style="overflow-x: hidden">
-    <?php
-      include('../../modelo/nav.php');
-    ?>
 
-    <div class="row mt-4">
-        <div class="col"></div>
-        <div class="col">
-            <h2>Cadastro de Pacientes</h2>
+    <?php include('../../modelo/nav.php'); ?>
 
-            <?php if ($sucesso): ?>
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <?= htmlspecialchars($sucesso, ENT_QUOTES, 'UTF-8') ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            <?php endif; ?>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col"></div>
+            <div class="col">
+                <h2>Cadastro de Pacientes</h2>
 
-            <?php if ($erro): ?>
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <?= htmlspecialchars($erro, ENT_QUOTES, 'UTF-8') ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            <?php endif; ?>
+                <?php if ($sucesso): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <?= htmlspecialchars($sucesso, ENT_QUOTES, 'UTF-8') ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
 
-            <form action="controller/pacienteController.php" method="post">
-                <div class="form-group mt-3">
-                    <label for="nome">Nome:</label>
-                    <input type="text" class="form-control" id="nome" name="nome" required>
-                </div>
-                <div class="form-group mt-3">
-                    <label for="nascimento">Data de nascimento:</label>
-                    <input type="date" class="form-control" id="nascimento" name="nascimento" required>
-                </div>
-                <div class="form-group mt-3">
-                    <label for="endereco">Endereço:</label>
-                    <input type="text" class="form-control" id="endereco" name="endereco" required>
-                </div>
-                <div class="form-group mt-3">
-                    <label for="telefone">Telefone:</label>
-                    <input type="tel" class="form-control" id="telefone" name="telefone" required>
-                </div>
-                <div class="form-group mt-3">
-                    <label for="cpf">CPF:</label>
-                    <input type="text" class="form-control" id="cpf" name="cpf" required>
-                </div>
-                <div class="form-group mt-3">
-                    <label for="observacoes">Observações do paciente:</label>
-                    <textarea type="text" class="form-control" id="observacoes" name="observacoes"></textarea>
-                </div>
-                <div class="d-flex justify-content-center mt-4">
-                    <button name="cadastrar" type="submit" class="btn btn-primary">Salvar</button>
-                </div>
-            </form>
+                <?php if ($erro): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <?= htmlspecialchars($erro, ENT_QUOTES, 'UTF-8') ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+
+                <form action="controller/pacienteController.php" method="post" class="mt-3">
+                    <!-- Se vier editar, $_GET['editar'] contém o ID -->
+                    <?php
+                        require_once './controller/pacienteController.php';
+                        $pacienteEdicao = null;
+                        if (isset($_GET['editar'])) {
+                            $idEditar = (int) $_GET['editar'];
+                            $pacienteEdicao = $pacienteDao->buscarPorId($idEditar);
+                        }
+                    ?>
+
+                    <input type="hidden" name="id" value="<?= $pacienteEdicao['id'] ?? '' ?>">
+
+                    <div class="form-group mt-3">
+                        <label for="nome">Nome:</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="nome"
+                            name="nome"
+                            value="<?= $pacienteEdicao['nome'] ?? '' ?>"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label for="nascimento">Data de nascimento:</label>
+                        <input
+                            type="date"
+                            class="form-control"
+                            id="nascimento"
+                            name="nascimento"
+                            value="<?= $pacienteEdicao['data_nascimento'] ?? '' ?>"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label for="endereco">Endereço:</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="endereco"
+                            name="endereco"
+                            value="<?= $pacienteEdicao['endereco'] ?? '' ?>"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label for="telefone">Telefone:</label>
+                        <input
+                            type="tel"
+                            class="form-control"
+                            id="telefone"
+                            name="telefone"
+                            value="<?= $pacienteEdicao['telefone'] ?? '' ?>"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label for="cpf">CPF:</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="cpf"
+                            name="cpf"
+                            value="<?= $pacienteEdicao['cpf'] ?? '' ?>"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label for="observacoes">Observações do paciente:</label>
+                        <textarea
+                            rows="5"
+                            class="form-control"
+                            id="observacoes"
+                            name="observacoes"
+                        ><?= $pacienteEdicao['observacoes'] ?? '' ?></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-center mt-4">
+                        <?php if ($pacienteEdicao): ?>
+                            <button name="atualizar" type="submit" class="btn btn-success">Atualizar</button>
+                            <a href="cadastroPaciente.php" class="btn btn-secondary ms-2">Cancelar</a>
+                        <?php else: ?>
+                            <button name="cadastrar" type="submit" class="btn btn-primary">Salvar</button>
+                        <?php endif; ?>
+                    </div>
+                </form>
+            </div>
+            <div class="col"></div>
         </div>
-        <div class="col"></div>
-
-        <?php
-        include('../../modelo/footer.php');
-        ?>
     </div>
-</body>
 
+    <?php include('../../modelo/footer.php'); ?>
+</body>
 </html>

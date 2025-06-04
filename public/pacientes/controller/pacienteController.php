@@ -1,28 +1,86 @@
-<?php
-session_start();
+<?php 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-require __DIR__ . '../../../connection/Connection.php';
-require __DIR__ . '/../../../modelo/paciente.php';
-require __DIR__ . '/../dao/pacienteDao.php';
+require_once(__DIR__."../../../connection/Connection.php");
+require_once(__DIR__."../../../../modelo/paciente.php");
+require_once(__DIR__."../../dao/pacienteDao.php");
 
-$paciente = new Paciente();
 $pacienteDao = new PacienteDao();
 
-if (isset($_POST['cadastrar'])) {
-    $nome = trim($_POST['nome']);
-    $cpf = trim($_POST['cpf']);
-    $telefone = trim($_POST['telefone']);
-    $endereco = trim($_POST['endereco']);
-    $observacoes = trim($_POST['observacoes']);
-    $dataNascimento = trim($_POST['nascimento']);
+// Cadastro de paciente
+if(isset($_POST['cadastrar'])) {
+    $nome = $_POST['nome'];
+    $dataNascimento = $_POST['nascimento'];
+    $endereco = $_POST['endereco'];
+    $telefone = $_POST['telefone'];
+    $cpf = $_POST['cpf'];
+    $observacoes = $_POST['observacoes'];
 
-    $sucesso = $pacienteDao->inserir($nome, $cpf, $telefone, $endereco, $observacoes, $dataNascimento);
-    if ($sucesso) {
-        $_SESSION['sucesso'] = "Paciente cadastrado com sucesso!";
-    } else {
-        $_SESSION['erro'] = "Erro ao cadastrar paciente.";
-    }
-    header("Location: ../cadastroPaciente.php");
-    exit;
+    $pacienteDao->inserir($nome, $cpf, $telefone, $endereco, $observacoes, $dataNascimento);
+
+    $_SESSION['sucesso'] = "Paciente cadastrado com sucesso!";
+    header("Location: ../pacientes/cadastroPaciente.php");
+    exit();
 }
-?>
+
+if(isset($_POST['atualizar'])) { 
+    $id = $_POST['id'];
+    $nome = $_POST['nome'];
+    $dataNascimento = $_POST['nascimento'];
+    $endereco = $_POST['endereco'];
+    $telefone = $_POST['telefone'];
+    $cpf = $_POST['cpf'];
+    $observacoes = $_POST['observacoes'];
+
+    $pacienteDao->atualizar($id, $nome, $cpf, $telefone, $endereco, $observacoes, $dataNascimento);
+
+    $_SESSION['sucesso'] = "Paciente atualizado com sucesso!";
+    header("Location: ../pacientes/gestaoPaciente.php");
+    exit();
+}
+
+if(isset($_POST['excluir'])) {
+    $id = $_POST['excluir'];
+    $pacienteDao->delete($id);
+
+    $_SESSION['sucesso'] = "Paciente excluído com sucesso!";
+    header("Location: ../pacientes/gestaoPaciente.php");
+    exit();
+}
+
+function listar() {
+    $pacienteDao = new PacienteDao();
+    $cpfFiltro = $_GET['cpf'] ?? '';
+
+    if (!empty($cpfFiltro)) {
+        $lista = $pacienteDao->buscarPorCpf($cpfFiltro);
+    } else {
+        $lista = $pacienteDao->listarTodos();
+    }
+
+    foreach ($lista as $pac) {
+        echo "<tr>
+                <td>{$pac['id']}</td>
+                <td>{$pac['nome']}</td>
+                <td>{$pac['data_nascimento']}</td>
+                <td>{$pac['endereco']}</td>
+                <td>{$pac['telefone']}</td>
+                <td>{$pac['observacoes']}</td>
+                <td>
+                    <div class='d-flex gap-2'>
+                        <a href='cadastroPaciente.php?editar={$pac['id']}' class='btn btn-sm btn-warning'>
+                            <i class='bi bi-pencil-square'></i> Editar
+                        </a>
+                        <form method='POST' action='gestaoPaciente.php' onsubmit=\"return confirm('Tem certeza que deseja excluir este paciente?');\">
+                            <input type='hidden' name='excluir' value='{$pac['id']}'>
+                            <button type='submit' class='btn btn-sm btn-danger'>
+                                <i class='bi bi-trash'></i> Excluir
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>";
+    }
+}
