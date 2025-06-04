@@ -1,160 +1,110 @@
 package relatorio.view;
 
-import relatorio.model.Relatorio;
-import relatorio.service.RelatorioService;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
+import relatorio.controller.RelatorioController;
+import relatorio.model.Paciente;
+import relatorio.model.Relatorio;
+
 public class RelatorioView {
-    private RelatorioService service = new RelatorioService();
+
+    private RelatorioController controller = new RelatorioController();
     private Scanner scanner = new Scanner(System.in);
+    private int idRelatorio = 1;
+    private int idPaciente = 1;
 
     public void menu() {
-        int opcao = -1;
-
-        while (opcao != 0) {
-            System.out.println("\n=== Menu Relatórios ===");
-            System.out.println("1 - Listar todos");
-            System.out.println("2 - Adicionar");
-            System.out.println("3 - Atualizar");
-            System.out.println("4 - Excluir");
+        int opcao;
+        do {
+            System.out.println("\n=== Sistema de Relatórios ===");
+            System.out.println("1 - Adicionar Relatório");
+            System.out.println("2 - Listar Relatórios");
+            System.out.println("3 - Editar Relatório");
+            System.out.println("4 - Excluir Relatório");
             System.out.println("0 - Sair");
-            System.out.print("Escolha a opção: ");
-
-            try {
-                opcao = Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException e) {
-                opcao = -1;
-            }
+            System.out.print("Opção: ");
+            opcao = scanner.nextInt();
+            scanner.nextLine(); // consumir \n
 
             switch (opcao) {
-                case 1 -> listarRelatorios();
-                case 2 -> adicionarRelatorio();
-                case 3 -> atualizarRelatorio();
-                case 4 -> excluirRelatorio();
-                case 0 -> System.out.println("Saindo...");
-                default -> System.out.println("Opção inválida.");
+                case 1:
+                    adicionarRelatorio();
+                    break;
+                case 2:
+                    listarRelatorios();
+                    break;
+                case 3:
+                    editarRelatorio();
+                    break;
+                case 4:
+                    excluirRelatorio();
+                    break;
+                case 0:
+                    System.out.println("Saindo...");
+                    break;
+                default:
+                    System.out.println("Opção inválida!");
             }
-        }
-    }
-
-    private void listarRelatorios() {
-        List<Relatorio> relatorios = service.obterTodos();
-        if (relatorios.isEmpty()) {
-            System.out.println("Nenhum relatório cadastrado.");
-        } else {
-            System.out.println("\nLista de relatórios:");
-            for (Relatorio r : relatorios) {
-                System.out.println(r);
-            }
-        }
+        } while (opcao != 0);
     }
 
     private void adicionarRelatorio() {
-        System.out.println("\n=== Novo Relatório ===");
+        System.out.println("\n--- Novo Relatório ---");
         System.out.print("Nome do Paciente: ");
-        String nome = scanner.nextLine();
+        String nomePaciente = scanner.nextLine();
+        Paciente paciente = new Paciente(idPaciente++, nomePaciente);
 
         System.out.print("Tipo do Exame: ");
-        String tipo = scanner.nextLine();
+        String tipoExame = scanner.nextLine();
 
-        LocalDate data = lerData();
+        System.out.print("Data do Exame (dd/mm/aaaa): ");
+        String dataExame = scanner.nextLine();
 
-        System.out.print("Resultado: ");
-        String resultado = scanner.nextLine();
+        Relatorio relatorio = new Relatorio(idRelatorio++, paciente, tipoExame, dataExame);
+        controller.adicionarRelatorio(relatorio);
 
-        System.out.print("Observação: ");
-        String obs = scanner.nextLine();
-
-        Relatorio r = new Relatorio(nome, tipo, data, resultado, obs);
-        service.criarRelatorio(r);
         System.out.println("Relatório adicionado com sucesso!");
     }
 
-    private void atualizarRelatorio() {
-        System.out.print("\nInforme o ID do relatório para atualizar: ");
-        int id = lerInteiro();
+    private void listarRelatorios() {
+        System.out.println("\n--- Lista de Relatórios ---");
+        List<Relatorio> relatorios = controller.listarRelatorios();
 
-        Relatorio r = service.obterPorId(id);
-        if (r == null) {
-            System.out.println("Relatório não encontrado.");
-            return;
-        }
-
-        System.out.println("Atualizando relatório: " + r);
-
-        System.out.print("Nome do Paciente (" + r.getNomePaciente() + "): ");
-        String nome = scanner.nextLine();
-        if (!nome.isBlank()) r.setNomePaciente(nome);
-
-        System.out.print("Tipo do Exame (" + r.getTipoExame() + "): ");
-        String tipo = scanner.nextLine();
-        if (!tipo.isBlank()) r.setTipoExame(tipo);
-
-        System.out.print("Data do Exame (" + r.getDataExame() + ") (yyyy-MM-dd): ");
-        String dataStr = scanner.nextLine();
-        if (!dataStr.isBlank()) {
-            try {
-                LocalDate data = LocalDate.parse(dataStr);
-                r.setDataExame(data);
-            } catch (DateTimeParseException e) {
-                System.out.println("Data inválida. Mantendo data anterior.");
+        if (relatorios.isEmpty()) {
+            System.out.println("Nenhum relatório cadastrado.");
+        } else {
+            for (Relatorio r : relatorios) {
+                System.out.println(r.toString());
             }
         }
+    }
 
-        System.out.print("Resultado (" + r.getResultado() + "): ");
-        String resultado = scanner.nextLine();
-        if (!resultado.isBlank()) r.setResultado(resultado);
+    private void editarRelatorio() {
+        System.out.print("\nInforme o ID do relatório para editar: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
 
-        System.out.print("Observação (" + r.getObservacao() + "): ");
-        String obs = scanner.nextLine();
-        if (!obs.isBlank()) r.setObservacao(obs);
+        System.out.print("Novo tipo de exame: ");
+        String novoTipo = scanner.nextLine();
 
-        service.atualizarRelatorio(r);
-        System.out.println("Relatório atualizado com sucesso!");
+        System.out.print("Nova data do exame (dd/mm/aaaa): ");
+        String novaData = scanner.nextLine();
+
+        controller.editarRelatorio(id, novoTipo, novaData);
+        System.out.println("Relatório atualizado.");
     }
 
     private void excluirRelatorio() {
         System.out.print("\nInforme o ID do relatório para excluir: ");
-        int id = lerInteiro();
+        int id = scanner.nextInt();
+        scanner.nextLine();
 
-        Relatorio r = service.obterPorId(id);
-        if (r == null) {
-            System.out.println("Relatório não encontrado.");
-            return;
-        }
-
-        service.deletarRelatorio(id);
-        System.out.println("Relatório excluído com sucesso!");
-    }
-
-    private int lerInteiro() {
-        while (true) {
-            try {
-                return Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException e) {
-                System.out.print("Número inválido. Tente novamente: ");
-            }
-        }
-    }
-
-    private LocalDate lerData() {
-        while (true) {
-            System.out.print("Data do Exame (yyyy-MM-dd): ");
-            String dataStr = scanner.nextLine();
-            try {
-                return LocalDate.parse(dataStr);
-            } catch (DateTimeParseException e) {
-                System.out.println("Data inválida, tente no formato yyyy-MM-dd.");
-            }
-        }
+        controller.excluirRelatorio(id);
+        System.out.println("Relatório excluído.");
     }
 
     public static void main(String[] args) {
-        RelatorioView view = new RelatorioView();
-        view.menu();
+        new RelatorioView().menu();
     }
 }
