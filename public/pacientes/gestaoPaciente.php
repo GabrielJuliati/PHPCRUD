@@ -1,4 +1,9 @@
-<?php session_start(); ?>
+<?php session_start();
+
+    $sucesso = $_SESSION['sucesso'] ?? null;
+    $erro    = $_SESSION['erro'] ?? null;
+    unset($_SESSION['sucesso'], $_SESSION['erro']);
+?>
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -28,6 +33,20 @@
 
     <div class="container mt-4">
         <h2>Gestão de Pacientes</h2>
+
+        <?php if ($sucesso): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <?= htmlspecialchars($sucesso, ENT_QUOTES, 'UTF-8') ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>                    
+            </div>
+        <?php endif; ?>
+
+        <?php if ($erro): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <?= htmlspecialchars($erro, ENT_QUOTES, 'UTF-8') ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
 
         <!-- Formulário de busca por CPF -->
         <form method="get" class="row g-3 mb-4">
