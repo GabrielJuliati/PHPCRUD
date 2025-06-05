@@ -31,7 +31,7 @@
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-12 text-center">
-                <h1>Recuperção de acesso</h1>
+                <h1>Recuperação de acesso</h1>
                 <p class="lead">Insira seu e-mail institucional para recuperar sua senha.</p>
             </div>
         </div>
