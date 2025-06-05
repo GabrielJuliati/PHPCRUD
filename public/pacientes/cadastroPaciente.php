@@ -24,24 +24,19 @@
             <div class="col">
                 <h2>Cadastro de Pacientes</h2>
 
-                <?php if ($sucesso): ?>
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <?= htmlspecialchars($sucesso, ENT_QUOTES, 'UTF-8') ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                <?php endif; ?>
-
-                <?php if ($erro): ?>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <?= htmlspecialchars($erro, ENT_QUOTES, 'UTF-8') ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                <?php endif; ?>
-
                 <form action="controller/pacienteController.php" method="post" class="mt-3">
                     <!-- Se vier editar, $_GET['editar'] contém o ID -->
                     <?php
-                        require_once './controller/pacienteController.php';
+
+                        $sucesso = $_SESSION['sucesso'] ?? null;
+                        $erro    = $_SESSION['erro'] ?? null;
+                        unset($_SESSION['sucesso'], $_SESSION['erro']);
+
+                        require_once(__DIR__."../../pacientes/dao/pacienteDao.php");
+                        require_once(__DIR__."../../connection/Connection.php");
+
+                        $pacienteDao = new PacienteDao();
+
                         $pacienteEdicao = null;
                         if (isset($_GET['editar'])) {
                             $idEditar = (int) $_GET['editar'];
@@ -106,7 +101,7 @@
                             class="form-control"
                             id="cpf"
                             name="cpf"
-                            value="<?= $pacienteEdicao['cpf'] ?? '' ?>"
+                            value="<?= $pacienteEdicao['CPF'] ?? '' ?>"
                             required
                         >
                     </div>
@@ -124,7 +119,7 @@
                     <div class="d-flex justify-content-center mt-4">
                         <?php if ($pacienteEdicao): ?>
                             <button name="atualizar" type="submit" class="btn btn-success">Atualizar</button>
-                            <a href="cadastroPaciente.php" class="btn btn-secondary ms-2">Cancelar</a>
+                            <a href="gestaoPaciente.php" class="btn btn-secondary ms-2">Cancelar</a>
                         <?php else: ?>
                             <button name="cadastrar" type="submit" class="btn btn-primary">Salvar</button>
                         <?php endif; ?>
