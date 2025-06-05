@@ -9,7 +9,6 @@ require_once(__DIR__."../../dao/pacienteDao.php");
 
 $pacienteDao = new PacienteDao();
 
-// Cadastro de paciente
 if(isset($_POST['cadastrar'])) {
     $nome = $_POST['nome'];
     $dataNascimento = $_POST['nascimento'];
@@ -37,7 +36,7 @@ if(isset($_POST['atualizar'])) {
     $pacienteDao->atualizar($id, $nome, $cpf, $telefone, $endereco, $observacoes, $dataNascimento);
 
     $_SESSION['sucesso'] = "Paciente atualizado com sucesso!";
-    header("Location: ../pacientes/gestaoPaciente.php");
+    header("Location: ../gestaoPaciente.php");
     exit();
 }
 
@@ -62,7 +61,7 @@ function listar() {
 
     foreach ($lista as $pac) {
         echo "<tr>
-                <td>{$pac['id']}</td>
+                <td>{$pac['CPF']}</td>
                 <td>{$pac['nome']}</td>
                 <td>{$pac['data_nascimento']}</td>
                 <td>{$pac['endereco']}</td>
