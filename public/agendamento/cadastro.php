@@ -17,27 +17,53 @@
     ?>
 
     <div class="container">
-        <div class="row">
-            <div class="col"></div>
-            <div class="col">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
                 <h1 class="text-center m-5">Agendamento</h1>
                 <div>
                     <form action="controller/AgendamentoController.php" method="post">
-                        <div class="mt-3 text-center">
+                        <div class="mt-3">
                             <label for="nome" class="form-label">Nome</label>
                             <input type="text" name="nome" id="nome" class="form-control" required>
                         </div>
-                        <div class="mt-3 text-center">
+                        <div class="mt-3">
                             <label for="data_consulta" class="form-label">Data do Exame:</label>
-                            <input type="date" name="data_consulta" id="data_consulta" class="form-control" required>
-                        </div>
-                        <div class="mt-3 text-center">
-                            <label for="tipo_exame" class="form-label">Tipo do Exame:</label>
-                            <select id="tipo_exame" name="tipo_exame" class="form-select" required>
-                                <option value="ABO - Tipo Sanguíneo">ABO - Tipo Sanguíneo</option>
-                                <option value="Dengue">Dengue</option>
-                                <option value="COVID 19">COVID 19</option>
-                            </select>
+                <input type="date" name="data_consulta" id="data_consulta" class="form-control" required>
+                    </div>
+                        <div class="mt-3">
+                            <div class="mt-3">
+                                <label for="tipo_exame" class="form-label">Tipo do Exame:</label>
+                                <select id="tipo_exame" name="tipo_exame" class="form-select" required>
+                                    <?php
+                                    // Make sure the path to Connection.php is correct relative to this file
+                                    include('../connection/Connection.php');
+
+                                    try {
+                                        $conn = ConnectionFactory::getConnection();
+                                        $sql = "SELECT id, nome_exame FROM exames";
+                                        $stmt = $conn->query($sql);
+
+                                        if ($stmt) {
+                                            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                                            if (count($result) > 0) {
+                                                echo "<option value=\'\'>Selecione um exame</option>";
+                                                foreach ($result as $row) {
+                                                    $id = $row['id'];
+                                                    $nome = htmlspecialchars($row['nome_exame']);
+                                                    echo "<option value=\"$nome\">$nome</option>";
+                                                }
+                                            } else {
+                                                echo "<option value=\'\'>Nenhum exame disponível</option>";
+                                            }
+                                        } else {
+                                            echo "<option value=\'\'>Erro ao executar a consulta.</option>";
+                                        }
+                                    } catch (PDOException $e) {
+                                        echo "<option value=\'\'>Erro de conexão ou consulta: " . $e->getMessage() . "</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
                         </div>
                         <div class="mt-3 text-center">
                             <input type="submit" name="cadastrar" value="Cadastrar" class="btn btn-primary">
@@ -45,12 +71,10 @@
                     </form>
                 </div>
             </div>
-            <div class="col"></div>
         </div>
     </div>
     <?php
         include('../../modelo/footer.php');
     ?>
-
 </body>
 </html>

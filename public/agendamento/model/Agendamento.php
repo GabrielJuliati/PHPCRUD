@@ -4,6 +4,7 @@
         private $id;
         private $nome;
         private $dataConsulta;
+        private $cpf;
         private $tipoExame;
 
         public function getId() {
@@ -28,6 +29,14 @@
 
         public function setDataConsulta($dataConsulta) {
             return $this->dataConsulta = $dataConsulta;
+        }
+
+        public function getCpf() {
+            return $this->cpf;
+        }
+
+        public function setCpf($cpf) {
+            return $this->cpf = $cpf;
         }
 
         public function getTipoExame() {

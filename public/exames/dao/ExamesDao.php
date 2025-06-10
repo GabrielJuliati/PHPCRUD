@@ -1,17 +1,5 @@
 <?php 
 class ExamesDao{
-    public function inserir(Exames $exames) {
-        try {
-            $sql = "INSERT INTO exames (nome_exame, descricao)
-                    VALUES (:nomeExame, :descricao)";
-            $conn = ConnectionFactory::getConnection()->prepare($sql);
-            $conn->bindValue(":nomeExame", $exames->getNomeExame());
-            $conn->bindValue(":descricao", $exames->getDescricao());
-            return $conn->execute();
-        } catch(PDOException $ex) {
-            echo "<p> Erro </p> <p> $ex </p>";
-        }
-    }
 
     public function atualizar(Exames $exm) {
         $conn = ConnectionFactory::getConnection();

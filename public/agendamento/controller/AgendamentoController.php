@@ -42,16 +42,24 @@ if(isset($_POST['excluir?id'])) {
     $resultado = $agendamentoDao->delete($agendamento);
 }
 
-
 function listar() {
     $agendamentoDao = new AgendamentoDao();
     $lista = $agendamentoDao->read();
+
+    $cpfFiltro = $_GET['cpf'] ?? '';
+
+    if (!empty($cpfFiltro)) {
+        $lista = $agendamentoDao->buscarPorCpf($cpfFiltro);
+    } else {
+        $lista = $agendamentoDao->read();
+    }
 
     foreach ($lista as $agd) {
         echo "<tr>
                 <td>{$agd->getId()}</td>
                 <td>{$agd->getNome()}</td>
                 <td>{$agd->getDataConsulta()}</td>
+                <td>{$agd->getCpf()}</td>
                 <td>{$agd->getTipoExame()}</td>
                 <td>
                     <div class='d-flex gap-2'>
@@ -69,6 +77,4 @@ function listar() {
             </tr>";
     }
 }
-
-
 ?>

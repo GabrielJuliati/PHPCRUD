@@ -11,16 +11,6 @@ $exames = new Exames();
 
 $examesDao = new ExamesDao();
 
-if(isset($_POST['cadastrar'])) {
-    $nomeExame = $_POST['nome_exame'];
-    $descricao = $_POST['descricao'];
-
-    $exames->setNomeExame($_POST['nome_exame']);
-    $exames->setDescricao($_POST['descricao']);
-    $examesDao->inserir($exames);
-    header("Location: ../exames.php");
-}
-
 if(isset($_POST['atualizar'])) { 
     $id = $_POST['id'];
     $exames->setId($id);
