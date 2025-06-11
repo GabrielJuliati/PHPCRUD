@@ -1,3 +1,10 @@
+<?php
+if (!isset($_SESSION["id"])) {
+    header("Location: /acesso/login.php");
+    exit;
+}
+?>
+
 <div class="col mt-3">
     <div class="card">
         <div class="card-body">

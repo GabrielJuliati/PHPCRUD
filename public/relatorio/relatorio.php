@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+    if (!isset($_SESSION["id"])) {
+        header("Location: ../acesso/login.php");
+        exit;
+    }
+
 require_once(__DIR__ . '/controller/RelatorioController.php');
 
 $mensagem = $_SESSION['mensagem'] ?? '';
