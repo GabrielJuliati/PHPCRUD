@@ -108,6 +108,86 @@ if (isset($_POST['reset'])) {
 
     $usuarioDao->updatePassword($email, $senha_hash);
 
+     $html = "
+    <!DOCTYPE html>
+    <html lang='pt-BR'>
+    <head>
+      <meta charset='UTF-8'>
+      <title>Redefinição de Senha</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f7;
+          margin: 0;
+          padding: 0;
+          color: #333333;
+        }
+        .container {
+          max-width: 600px;
+          margin: 40px auto;
+          background-color: #ffffff;
+          border-radius: 8px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+          overflow: hidden;
+        }
+        .header {
+          background-color: #4a90e2;
+          padding: 20px;
+          color: #ffffff;
+          text-align: center;
+        }
+        .content {
+          padding: 30px 20px;
+        }
+        .content h2 {
+          margin-top: 0;
+        }
+        .button {
+          display: inline-block;
+          margin: 20px 0;
+          padding: 12px 25px;
+          background-color: #4a90e2;
+          color: #ffffff !important;
+          text-decoration: none;
+          border-radius: 5px;
+          font-weight: bold;
+        }
+        .footer {
+          background-color: #f0f0f0;
+          padding: 15px;
+          font-size: 12px;
+          text-align: center;
+          color: #777777;
+        }
+        @media only screen and (max-width: 600px) {
+          .content, .header, .footer {
+            padding: 15px;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class='container'>
+        <div class='header'>
+          <h1>Redefinição de Senha</h1>
+        </div>
+        <div class='content'>
+          <h2>Olá, $nome!</h2>
+          <p>Recebemos uma solicitação para redefinir sua senha.</p>
+          <p>Sua nova senha provisória é:</p>
+          <p style='text-align: center; font-size: 20px; font-weight: bold;'>$senha_provisoria</p>
+          <p>Por favor, faça login no sistema e altere sua senha o quanto antes.</p>
+          <p>Se você não solicitou essa redefinição, por favor ignore este e-mail.</p>
+          <p>Obrigado,<br>Equipe de Suporte - Sistema Positivo de Saúde</p>
+        </div>
+        <div class='footer'>
+          &copy; 2025 Sistema Positivo de Saúde. Todos os direitos reservados.
+        </div>
+      </div>
+    </body>
+    </html>";
+
+
     // Envio de e-mail
     $mail = new PHPMailer(true);
     try {
@@ -122,9 +202,9 @@ if (isset($_POST['reset'])) {
 
         $mail->setFrom('sps.ti.no.reply@gmail.com', 'Sistema SPS');
         $mail->addAddress($email, $nome);
-        $mail->isHTML(false);
+        $mail->isHTML(true);
         $mail->Subject = "Recuperação de Senha - Sistema Positivo de Saúde";
-        $mail->Body = "Olá $nome,\n\nSua nova senha provisória é: $senha_provisoria\n\nPor favor, altere sua senha após o login.";
+        $mail->Body = $html;
 
         $mail->send();
         $_SESSION['sucesso'] = "Senha provisória enviada para o e-mail institucional.";

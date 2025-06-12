@@ -1,5 +1,10 @@
 <?php session_start();
 
+    if (!isset($_SESSION["id"])) {
+        header("Location: ../acesso/login.php");
+        exit;
+    }
+
     $sucesso = $_SESSION['sucesso'] ?? null;
     $erro    = $_SESSION['erro'] ?? null;
     unset($_SESSION['sucesso'], $_SESSION['erro']);

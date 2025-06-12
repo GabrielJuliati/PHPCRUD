@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+    if (!isset($_SESSION["id"])) {
+        header("Location: ../acesso/login.php");
+        exit;
+    }
+
 // Carrega mensagens de sucesso/erro (se houver)
 $sucesso = $_SESSION['sucesso'] ?? null;
 $erro    = $_SESSION['erro'] ?? null;
@@ -20,6 +25,7 @@ $usuarios   = $usuarioDao->findAll();
     <title>Cadastro de Usuário</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="../CSS/styleCP.css">
     <style> .mt-2 { margin-top: 0.5rem;}</style>
 </head>
 
