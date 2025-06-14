@@ -1,4 +1,10 @@
-<?php session_start(); ?>
+<?php session_start();
+
+    if (!isset($_SESSION["id"])) {
+        header("Location: ../acesso/login.php");
+        exit;
+    }
+?>
 
 <!DOCTYPE html>
 <html lang="pt-br">
