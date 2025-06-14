@@ -1,6 +1,11 @@
-const express = require('express');
+const express = require("express");
 const app = express();
 const bodyParser = require('body-parser');
+const cors = require('cors');
+const PacienteDao = require('./pacienteDao');
+
+//Perguntar o motivo de usar o cors
+app.use(cors());
 
 //Converte os dados recebidos em json
 app.use(bodyParser.json());
@@ -12,47 +17,164 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 
 
-
 //------------------------------------------------------------------------------------------
+const pacienteDao = new PacienteDao();
 
-
-
-app.get("/public/acesso/login", (req, res) => {
+// GET - Listar todos os pacientes
+app.get("/api/pacientes", async (req, res) => {
+    try {
+        const pacientes = await pacienteDao.listarTodos();
+        res.status(200).json({
+            success: true,
+            data: pacientes,
+            message: "Pacientes listados com sucesso"
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Erro ao listar pacientes",
+            error: error.message
+        });
+    }
 });
 
-app.get("/public/acesso/forgotPassword", (req, res) => {
+// GET - Buscar paciente por ID
+app.get("/api/pacientes/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        const paciente = await pacienteDao.buscarPorId(id);
+        
+        if (!paciente) {
+            return res.status(404).json({
+                success: false,
+                message: "Paciente não encontrado"
+            });
+        }
+        
+        res.status(200).json({
+            success: true,
+            data: paciente,
+            message: "Paciente encontrado com sucesso"
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Erro ao buscar paciente",
+            error: error.message
+        });
+    }
 });
 
-app.get("/public/acesso/controller/usuarioController", (req, res) => {
+// GET - Buscar pacientes por CPF
+app.get("/api/pacientes/cpf/:cpf", async (req, res) => {
+    try {
+        const cpf = req.params.cpf;
+        const pacientes = await pacienteDao.buscarPorCpf(cpf);
+        
+        res.status(200).json({
+            success: true,
+            data: pacientes,
+            message: "Busca por CPF realizada com sucesso"
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Erro ao buscar paciente por CPF",
+            error: error.message
+        });
+    }
 });
 
-app.get("/public/acesso/dao/usuarioDao", (req, res) => {
+// POST - Criar novo paciente
+app.post("/api/pacientes", async (req, res) => {
+    try {
+        const { nome, cpf, telefone, endereco, observacoes, dataNascimento } = req.body;
+        
+        // Validação básica
+        if (!nome || !cpf) {
+            return res.status(400).json({
+                success: false,
+                message: "Nome e CPF são obrigatórios"
+            });
+        }
+        
+        const result = await pacienteDao.inserir(nome, cpf, telefone, endereco, observacoes, dataNascimento);
+        
+        res.status(201).json({
+            success: true,
+            data: { id: result.insertId },
+            message: "Paciente cadastrado com sucesso"
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Erro ao cadastrar paciente",
+            error: error.message
+        });
+    }
 });
 
-app.get("/public/home/home", (req, res) => {
+// PUT - Atualizar paciente
+app.put("/api/pacientes/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { nome, cpf, telefone, endereco, observacoes, dataNascimento } = req.body;
+        
+        // Validação básica
+        if (!nome || !cpf) {
+            return res.status(400).json({
+                success: false,
+                message: "Nome e CPF são obrigatórios"
+            });
+        }
+        
+        const result = await pacienteDao.atualizar(id, nome, cpf, telefone, endereco, observacoes, dataNascimento);
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Paciente não encontrado"
+            });
+        }
+        
+        res.status(200).json({
+            success: true,
+            message: "Paciente atualizado com sucesso"
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Erro ao atualizar paciente",
+            error: error.message
+        });
+    }
 });
 
-app.get("/public/pacientes/escolhaPaciente", (req, res) => {
+// DELETE - Excluir paciente
+app.delete("/api/pacientes/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        const result = await pacienteDao.delete(id);
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Paciente não encontrado"
+            });
+        }
+        
+        res.status(200).json({
+            success: true,
+            message: "Paciente excluído com sucesso"
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Erro ao excluir paciente",
+            error: error.message
+        });
+    }
 });
-
-app.get("/public/pacientes/cadastroPaciente", (req, res) => {
-});
-
-app.get("/public/pacientes/gestaoPaciente", (req, res) => {
-});
-
-app.get("/public/pacientes/controller/pacienteController", (req, res) => {
-});
-
-app.get("/public/pacientes/dao/pacienteDao", (req, res) => {
-});
-
-app.get("/public/cadastro/cadastro", (req, res) => {
-});
-
-app.get("/public/logout/logout", (req, res) => {
-});
-
 
 //------------------------------------------------------------------------------------------
 
@@ -144,8 +266,8 @@ app.delete("/cliente", (req, res) => {
 app.get("/fornecedores", (req, res) => {
     res.end("<html><head><title>Minha primeira página</title></head><body><h1>Minha primeira pagina</h1></body></html>");
 });
-
-app.listen(3000, () => {
-    console.log('Servidor rodando na porta 3000');
-});
 */
+app.listen(3000, () => {
+    console.log("Servidor rodando na porta 3000");
+    console.log("API disponível em: http://localhost:3000");
+});
