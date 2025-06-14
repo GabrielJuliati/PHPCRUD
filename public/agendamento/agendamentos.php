@@ -47,13 +47,13 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>Id</th> <th>Nome</th> <th>Data Consulta</th> <th>CPF</th> <th>Exame</th> <th>Ações</th>
+                            <th>Id</th> <th>Nome do Paciente</th> <th>Data Consulta</th> <th>CPF</th> <th>Exame</th> <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
                          <?php
                          if($_SERVER["REQUEST_METHOD"] == "GET" || $_SERVER["REQUEST_METHOD"] == "POST"){
-                            require_once './controller/AgendamentoController.php';
+
                             listar();
                          }
                          ?>
@@ -69,3 +69,4 @@
         ?>
 </body>
 </html>
+

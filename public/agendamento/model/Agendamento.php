@@ -1,51 +1,31 @@
-<?php 
-    class Agendamento {
-        
-        private $id;
-        private $nome;
-        private $dataConsulta;
-        private $cpf;
-        private $tipoExame;
+<?php
 
-        public function getId() {
-            return $this->id;
-        }
+class Agendamento {
+    private $id;
+    private $dataConsulta;
+    private $pacienteId;
+    private $pacienteNome;
+    private $pacienteCpf;
+    private $tipoExame;
 
-        public function setId($id) {
-            return $this->id = $id;
-        }
+    public function getId() { return $this->id; }
+    public function setId($id) { $this->id = $id; }
 
-        public function getNome() {
-            return $this->nome;
-        }
+    public function getDataConsulta() { return $this->dataConsulta; }
+    public function setDataConsulta($dataConsulta) { $this->dataConsulta = $dataConsulta; }
 
-        public function setNome($nome) {
-            return $this->nome = $nome;
-        }
+    public function getPacienteId() { return $this->pacienteId; }
+    public function setPacienteId($pacienteId) { $this->pacienteId = $pacienteId; }
 
-        public function getDataConsulta() {
-            return $this->dataConsulta;
-        }
+    public function getPacienteNome() { return $this->pacienteNome; }
+    public function setPacienteNome($pacienteNome) { $this->pacienteNome = $pacienteNome; }
 
-        public function setDataConsulta($dataConsulta) {
-            return $this->dataConsulta = $dataConsulta;
-        }
+    public function getPacienteCpf() { return $this->pacienteCpf; }
+    public function setPacienteCpf($pacienteCpf) { $this->pacienteCpf = $pacienteCpf; }
 
-        public function getCpf() {
-            return $this->cpf;
-        }
+    public function getTipoExame() { return $this->tipoExame; }
+    public function setTipoExame($tipoExame) { $this->tipoExame = $tipoExame; }
+}
 
-        public function setCpf($cpf) {
-            return $this->cpf = $cpf;
-        }
-
-        public function getTipoExame() {
-            return $this->tipoExame;
-        }
-
-        public function setTipoExame($tipoExame) {
-            return $this->tipoExame = $tipoExame;
-        }
-
-    }
 ?>
+

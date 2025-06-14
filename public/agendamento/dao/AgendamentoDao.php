@@ -1,29 +1,23 @@
 <?php 
 class AgendamentoDao {
 
-    public function inserir(Agendamento $agendamento) {
-        try {
-            $sql = "INSERT INTO agendamento (nome, data_consulta, tipo_exame, cpf)
-                    VALUES (:nome, :dataConsulta, :tipoExame, :cpf)";
-            $conn = ConnectionFactory::getConnection()->prepare($sql);
-            $conn->bindValue(":nome", $agendamento->getNome());
-            $conn->bindValue(":dataConsulta", $agendamento->getDataConsulta());
-            $conn->bindValue(":tipoExame", $agendamento->getTipoExame());
-            $conn->bindValue(":cpf", $agendamento->getCpf());
-            return $conn->execute();
-        } catch(PDOException $ex) {
-            echo "<p> Erro </p> <p> $ex </p>";
-        }
+    public function inserir($agendamento) {
+        $conn = ConnectionFactory::getConnection();
+        $sql = "INSERT INTO agendamento (paciente_id, data_consulta, tipo_exame) VALUES (:paciente_id, :data_consulta, :tipo_exame)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(":paciente_id", $agendamento->getPacienteId());
+        $stmt->bindParam(":data_consulta", $agendamento->getDataConsulta());
+        $stmt->bindParam(":tipo_exame", $agendamento->getTipoExame());
+        return $stmt->execute();
     }
 
     public function atualizar(Agendamento $agd) {
         $conn = ConnectionFactory::getConnection();
-        $sql = "UPDATE agendamento SET nome = :nome, data_consulta = :data, cpf = :cpf, tipo_exame = :exame WHERE id = :id";
+        $sql = "UPDATE agendamento SET data_consulta = :data, paciente_id = :paciente_id, tipo_exame = :tipo_exame WHERE id = :id";
         $stmt = $conn->prepare($sql);
-        $stmt->bindValue(":nome", $agd->getNome());
         $stmt->bindValue(":data", $agd->getDataConsulta());
-        $stmt->bindValue(":exame", $agd->getTipoExame());
-        $stmt->bindValue(":cpf", $agd->getCpf());
+        $stmt->bindValue(":paciente_id", $agd->getPacienteId());
+        $stmt->bindValue(":tipo_exame", $agd->getTipoExame());
         $stmt->bindValue(":id", $agd->getId(), PDO::PARAM_INT);
         return $stmt->execute();
     }
@@ -42,67 +36,71 @@ class AgendamentoDao {
 }
 
     public function read() {
-        try {
-            $sql = "SELECT * FROM agendamento";
-            $conn = ConnectionFactory::getConnection()->query($sql);
-            $lista = $conn->fetchAll(PDO::FETCH_ASSOC);
-            $agdList = array();
-            foreach($lista as $agd) {
-                $agdList[] = $this->listaAgendamento($agd);
-            }
-            return $agdList;
-        } catch (PDOException $ex) {
-            echo "<p>Ocorreu um erro ao executar a consulta </p> {$ex}";
-        }
+        $sql = "SELECT a.id, a.data_consulta, a.tipo_exame, p.nome AS paciente_nome, p.cpf AS paciente_cpf 
+                FROM agendamento a 
+                JOIN paciente p ON a.paciente_id = p.id";
+        $conn = ConnectionFactory::getConnection();
+        $stmt = $conn->query($sql);
+        $agendamentos = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $agendamentos[] = $this->listaAgendamento($row);
+        }   
+        return $agendamentos;
     }
 
     public function listaAgendamento($row) {
         $agendamento = new Agendamento();
         $agendamento->setId($row['id']);
-        $agendamento->setNome($row['nome']);
+        $agendamento->setPacienteNome($row['paciente_nome']);
         $agendamento->setDataConsulta($row['data_consulta']);
-        $agendamento->setCpf($row['cpf']);
+        $agendamento->setPacienteCpf($row['paciente_cpf']);
         $agendamento->setTipoExame($row['tipo_exame']);
         return $agendamento; 
     }
+    
+public function buscarPorId($id) {
+    $conn = ConnectionFactory::getConnection();
+    $sql = "SELECT a.id, a.data_consulta, a.tipo_exame, 
+                   a.paciente_id, p.nome AS paciente_nome, p.cpf AS paciente_cpf 
+            FROM agendamento a 
+            JOIN paciente p ON a.paciente_id = p.id 
+            WHERE a.id = :id";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindValue(":id", $id, PDO::PARAM_INT);
+    $stmt->execute();
 
-    public function buscarPorId($id) {
-        $conn = ConnectionFactory::getConnection();
-        $sql = "SELECT * FROM agendamento WHERE id = :id";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindValue(":id", $id, PDO::PARAM_INT);
-        $stmt->execute();
-
-        if ($row = $stmt->fetch()) {
-            $agd = new Agendamento();
-            $agd->setId($row['id']);
-            $agd->setNome($row['nome']);
-            $agd->setDataConsulta($row['data_consulta']);
-            $agd->setTipoExame($row['tipo_exame']);
-            return $agd;
-        }
-
-        return null;
+    if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) { // Use FETCH_ASSOC for consistency
+        $agd = new Agendamento();
+        $agd->setId($row["id"]);
+        $agd->setDataConsulta($row["data_consulta"]);
+        $agd->setPacienteId($row["paciente_id"]); // Set patient_id
+        $agd->setPacienteNome($row["paciente_nome"]); // Set patient_name from join
+        $agd->setPacienteCpf($row["paciente_cpf"]);   // Set patient_cpf from join
+        $agd->setTipoExame($row["tipo_exame"]); // Set tipo_exame_string
+        return $agd;
     }
+
+    return null;
+}
+
 
     public function buscarPorCpf($cpf) {
-    try {
-        $sql = "SELECT * FROM agendamento WHERE cpf LIKE :cpf";
-        $conn = ConnectionFactory::getConnection()->prepare($sql);
-        $conn->bindValue(':cpf', "%$cpf%", PDO::PARAM_STR);
-        $conn->execute();
+        $conn = ConnectionFactory::getConnection();
+        $sql = "SELECT a.id, a.data_consulta, a.tipo_exame, p.nome AS paciente_nome, p.cpf AS paciente_cpf 
+                FROM agendamento a 
+                JOIN paciente p ON a.paciente_id = p.id 
+                WHERE p.cpf LIKE :cpf";
+        $stmt = $conn->prepare($sql);
+        $searchTerm = '%' . $cpf . '%';
 
-        $resultados = $conn->fetchAll(PDO::FETCH_ASSOC);
-        $lista = [];
-        foreach ($resultados as $row) {
-            $lista[] = $this->listaAgendamento($row); // converte cada linha em objeto Agendamento
+        $stmt->bindParam(":cpf", $searchTerm);
+        $stmt->execute();
+        $agendamentos = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $agendamentos[] = $this->listaAgendamento($row);
         }
-        return $lista;
-    } catch (PDOException $ex) {
-        echo "<p> Erro </p> <p> $ex </p>";
-        return [];
+        return $agendamentos;
     }
-}
 
 }
 ?>
