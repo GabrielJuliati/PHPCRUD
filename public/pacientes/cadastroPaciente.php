@@ -30,12 +30,23 @@
                 <h2>Cadastro de Pacientes</h2>
 
                 <form action="controller/pacienteController.php" method="post" class="mt-3">
+                    
+                    <?php if ($sucesso): ?>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <?= htmlspecialchars($sucesso, ENT_QUOTES, 'UTF-8') ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>                    
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if ($erro): ?>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <?= htmlspecialchars($erro, ENT_QUOTES, 'UTF-8') ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <?php endif; ?>
+
                     <!-- Se vier editar, $_GET['editar'] contém o ID -->
                     <?php
-
-                        $sucesso = $_SESSION['sucesso'] ?? null;
-                        $erro    = $_SESSION['erro'] ?? null;
-                        unset($_SESSION['sucesso'], $_SESSION['erro']);
 
                         require_once(__DIR__."../../pacientes/dao/pacienteDao.php");
                         require_once(__DIR__."../../connection/Connection.php");
@@ -70,7 +81,7 @@
                             class="form-control"
                             id="nascimento"
                             name="nascimento"
-                            value="<?= $pacienteEdicao['data_nascimento'] ?? '' ?>"
+                            value="<?= isset($pacienteEdicao["data_nascimento"]) ? date("Y-m-d", strtotime($pacienteEdicao["data_nascimento"])) : "" ?>"
                             required
                         >
                     </div>

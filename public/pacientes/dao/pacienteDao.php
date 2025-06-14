@@ -3,86 +3,134 @@ require_once __DIR__ . '/../../connection/Connection.php';
 
 class PacienteDao {
 
+    private $apiUrl = 'http://localhost:3000/api/pacientes';
+
+    private function makeApiRequest($url, $method = 'GET', $data = null) {
+        $ch = curl_init();
+        
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Accept: application/json'
+        ]);
+        
+        switch ($method) {
+            case 'POST':
+                curl_setopt($ch, CURLOPT_POST, true);
+                if ($data) {
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+                }
+                break;
+            case 'PUT':
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+                if ($data) {
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+                }
+                break;
+            case 'DELETE':
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+                break;
+        }
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($response === false) {
+            throw new Exception('Erro ao conectar com a API Node.js');
+        }
+        
+        $decodedResponse = json_decode($response, true);
+        
+        if ($httpCode >= 400) {
+            $errorMessage = isset($decodedResponse['message']) ? $decodedResponse['message'] : 'Erro na API';
+            throw new Exception($errorMessage);
+        }
+        
+        return $decodedResponse;
+    }
+
+
     public function inserir($nome, $cpf, $telefone, $endereco, $observacoes, $dataNascimento) {
         try {
-            $sql = "INSERT INTO paciente (nome, cpf, telefone, endereco, observacoes, data_nascimento)
-                    VALUES (:nome, :cpf, :telefone, :endereco, :observacoes, :dataNascimento)";
-            $conn = ConnectionFactory::getConnection()->prepare($sql);
-            $conn->bindValue(':nome', $nome, PDO::PARAM_STR);
-            $conn->bindValue(':cpf', $cpf, PDO::PARAM_STR);
-            $conn->bindValue(':telefone', $telefone, PDO::PARAM_STR);
-            $conn->bindValue(':endereco', $endereco, PDO::PARAM_STR);
-            $conn->bindValue(':observacoes', $observacoes, PDO::PARAM_STR);
-            $conn->bindValue(':dataNascimento', $dataNascimento, PDO::PARAM_STR);
-            return $conn->execute();
-        } catch (PDOException $ex) {
-            echo "<p> Erro </p> <p> $ex </p>";
+            $data = [
+                'nome' => $nome,
+                'cpf' => $cpf,
+                'telefone' => $telefone,
+                'endereco' => $endereco,
+                'observacoes' => $observacoes,
+                'dataNascimento' => $dataNascimento
+            ];
+            
+            $response = $this->makeApiRequest($this->apiUrl, 'POST', $data);
+            return $response['success'] ?? false;
+        } catch (Exception $ex) {
+            echo "<p>Erro ao inserir paciente: " . $ex->getMessage() . "</p>";
+            return false;
         }
     }
 
     public function listarTodos() {
         try {
-            $sql = "SELECT * FROM paciente";
-            $conn = ConnectionFactory::getConnection()->query($sql);
-            return $conn->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $ex) {
-            echo "<p>Ocorreu um erro ao executar a consulta </p> {$ex}";
+            $response = $this->makeApiRequest($this->apiUrl);
+            return $response['data'] ?? [];
+        } catch (Exception $ex) {
+            echo "<p>Erro ao listar pacientes: " . $ex->getMessage() . "</p>";
+            return [];
         }
     }
 
     public function atualizar($id, $nome, $cpf, $telefone, $endereco, $observacoes, $dataNascimento) {
         try {
-            $sql = "UPDATE paciente 
-                    SET nome = :nome, cpf = :cpf, telefone = :telefone, endereco = :endereco,
-                        observacoes = :observacoes, data_nascimento = :dataNascimento
-                    WHERE id = :id";
-            $conn = ConnectionFactory::getConnection()->prepare($sql);
-            $conn->bindValue(':nome', $nome);
-            $conn->bindValue(':cpf', $cpf);
-            $conn->bindValue(':telefone', $telefone);
-            $conn->bindValue(':endereco', $endereco);
-            $conn->bindValue(':observacoes', $observacoes);
-            $conn->bindValue(':dataNascimento', $dataNascimento);
-            $conn->bindValue(':id', $id, PDO::PARAM_INT);
-            return $conn->execute();
-        } catch (PDOException $ex) {
-            echo "<p> Erro </p> <p> $ex </p>";
+            $data = [
+                'nome' => $nome,
+                'cpf' => $cpf,
+                'telefone' => $telefone,
+                'endereco' => $endereco,
+                'observacoes' => $observacoes,
+                'dataNascimento' => $dataNascimento
+            ];
+            
+            $url = $this->apiUrl . '/' . $id;
+            $response = $this->makeApiRequest($url, 'PUT', $data);
+            return $response['success'] ?? false;
+        } catch (Exception $ex) {
+            echo "<p>Erro ao atualizar paciente: " . $ex->getMessage() . "</p>";
+            return false;
         }
     }
 
     public function delete($id) {
         try {
-            $sql = "DELETE FROM paciente WHERE id = :id";
-            $conn = ConnectionFactory::getConnection()->prepare($sql);
-            $conn->bindValue(':id', $id, PDO::PARAM_INT);
-            return $conn->execute();
-        } catch (PDOException $e) {
-            echo "Erro ao excluir: " . $e->getMessage();
+            $url = $this->apiUrl . '/' . $id;
+            $response = $this->makeApiRequest($url, 'DELETE');
+            return $response['success'] ?? false;
+        } catch (Exception $ex) {
+            echo "<p>Erro ao excluir paciente: " . $ex->getMessage() . "</p>";
             return false;
         }
     }
 
     public function buscarPorCpf($cpf) {
         try {
-            $sql = "SELECT * FROM paciente WHERE cpf LIKE :cpf";
-            $conn = ConnectionFactory::getConnection()->prepare($sql);
-            $conn->bindValue(':cpf', "%$cpf%", PDO::PARAM_STR);
-            $conn->execute();
-            return $conn->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $ex) {
-            echo "<p> Erro </p> <p> $ex </p>";
+            $url = $this->apiUrl . '/cpf/' . urlencode($cpf);
+            $response = $this->makeApiRequest($url);
+            return $response['data'] ?? [];
+        } catch (Exception $ex) {
+            echo "<p>Erro ao buscar paciente por CPF: " . $ex->getMessage() . "</p>";
+            return [];
         }
     }
 
     public function buscarPorId($id) {
         try {
-            $sql = "SELECT * FROM paciente WHERE id = :id";
-            $conn = ConnectionFactory::getConnection()->prepare($sql);
-            $conn->bindValue(':id', $id, PDO::PARAM_INT);
-            $conn->execute();
-            return $conn->fetch(PDO::FETCH_ASSOC);
-        } catch (PDOException $ex) {
-            echo "<p> Erro </p> <p> $ex </p>";
+            $url = $this->apiUrl . '/' . $id;
+            $response = $this->makeApiRequest($url);
+            return $response['data'] ?? null;
+        } catch (Exception $ex) {
+            echo "<p>Erro ao buscar paciente por ID: " . $ex->getMessage() . "</p>";
+            return null;
         }
     }
 }
