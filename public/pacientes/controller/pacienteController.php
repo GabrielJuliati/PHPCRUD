@@ -17,10 +17,14 @@ if(isset($_POST['cadastrar'])) {
     $cpf = $_POST['cpf'];
     $observacoes = $_POST['observacoes'];
 
-    $pacienteDao->inserir($nome, $cpf, $telefone, $endereco, $observacoes, $dataNascimento);
+    $result = $pacienteDao->inserir($nome, $cpf, $telefone, $endereco, $observacoes, $dataNascimento);
 
-    $_SESSION['sucesso'] = "Paciente cadastrado com sucesso!";
-    header("Location: ../pacientes/cadastroPaciente.php");
+    if ($result) {
+        $_SESSION['sucesso'] = "Paciente cadastrado com sucesso!";
+    } else {
+        $_SESSION['erro'] = "Erro ao cadastrar paciente. Verifique os dados e tente novamente.";
+    }
+    header("Location: ../cadastroPaciente.php");
     exit();
 }
 
@@ -60,10 +64,12 @@ function listar() {
     }
 
     foreach ($lista as $pac) {
+        $dataFormatada = date('d/m/Y', strtotime($pac['data_nascimento']));
+
         echo "<tr>
                 <td>{$pac['CPF']}</td>
                 <td>{$pac['nome']}</td>
-                <td>{$pac['data_nascimento']}</td>
+                <td>{$dataFormatada}</td>
                 <td>{$pac['endereco']}</td>
                 <td>{$pac['telefone']}</td>
                 <td>{$pac['observacoes']}</td>
