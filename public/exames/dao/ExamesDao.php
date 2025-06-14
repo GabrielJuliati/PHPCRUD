@@ -1,69 +1,88 @@
-<?php 
-class ExamesDao{
+<?php
 
-    public function atualizar(Exames $exm) {
-        $conn = ConnectionFactory::getConnection();
-        $sql = "UPDATE exames SET nome_exame = :nome, descricao = :descricao WHERE id = :id";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindValue(":nome", $exm->getNomeExame());
-        $stmt->bindValue(":descricao", $exm->getDescricao());
-        $stmt->bindValue(":id", $exm->getId(), PDO::PARAM_INT);
+require_once("ConnectionFactory.php");
+
+class ExameDengueDao {
+    private $conn;
+
+    public function __construct() {
+        $this->conn = ConnectionFactory::getConnection();
+    }
+
+    public function inserir($exameDengue) {
+        $sql = "INSERT INTO EXAME_DENGUE (nome, amostra_sangue, data_inicio_sintomas, agendamento_id, paciente_id) 
+                VALUES (:nome, :amostra_sangue, :data_inicio_sintomas, :agendamento_id, :paciente_id)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(":nome", $exameDengue->getNome());
+        $stmt->bindParam(":amostra_sangue", $exameDengue->getAmostraSangue());
+        $stmt->bindParam(":data_inicio_sintomas", $exameDengue->getDataInicioSintomas());
+        $stmt->bindParam(":agendamento_id", $exameDengue->getAgendamentoId());
+        $stmt->bindParam(":paciente_id", $exameDengue->getPacienteId());
         return $stmt->execute();
     }
 
-    public function delete($id) {
-        try {
-            $conn = ConnectionFactory::getConnection();
-            $sql = "DELETE FROM exames WHERE exames.id = :id";
-            $stmt = $conn->prepare($sql);
-            $stmt->bindValue(":id", $id, PDO::PARAM_INT);
-            return $stmt->execute();
-        } catch (PDOException $e) {
-            echo "Erro ao excluir: " . $e->getMessage();
-            return false;
-        }
-    }
-
-    public function read() {
-        try {
-            $sql = "SELECT * FROM exames";
-            $conn = ConnectionFactory::getConnection()->query($sql);
-            $lista = $conn->fetchAll(PDO::FETCH_ASSOC);
-            $exList = array();
-            foreach($lista as $exm) {
-                $exList[] = $this->listaExames($exm);
-            }
-            return $exList;
-        } catch (PDOException $ex) {
-            echo "<p>Ocorreu um erro ao executar a consulta </p> {$ex}";
-        }
-    }
-
-    public function listaExames($row) {
-        $exames = new Exames();
-        $exames->setId($row['id']);
-        $exames->setNomeExame($row['nome_exame']);
-        $exames->setDescricao($row['descricao']);
-        return $exames; 
-    }
-
-    public function buscarPorId($id) {
-        $conn = ConnectionFactory::getConnection();
-        $sql = "SELECT * FROM exames WHERE id = :id";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindValue(":id", $id, PDO::PARAM_INT);
+    public function buscarPorAgendamento($agendamentoId) {
+        $sql = "SELECT * FROM EXAME_DENGUE WHERE agendamento_id = :agendamento_id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(":agendamento_id", $agendamentoId);
         $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+}
 
-        if ($row = $stmt->fetch()) {
-            $exm = new Exames();
-            $exm->setId($row['id']);
-            $exm->setNomeExame($row['nome_exame']);
-            $exm->setDescricao($row['descricao']);
-            return $exm;
-        }
+class ExameAboDao {
+    private $conn;
 
-        return null;
+    public function __construct() {
+        $this->conn = ConnectionFactory::getConnection();
     }
 
+    public function inserir($exameAbo) {
+        $sql = "INSERT INTO EXAME_ABO (nome, amostra_sangue, agendamento_id, paciente_id) 
+                VALUES (:nome, :amostra_sangue, :agendamento_id, :paciente_id)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(":nome", $exameAbo->getNome());
+        $stmt->bindParam(":amostra_sangue", $exameAbo->getAmostraSangue());
+        $stmt->bindParam(":agendamento_id", $exameAbo->getAgendamentoId());
+        $stmt->bindParam(":paciente_id", $exameAbo->getPacienteId());
+        return $stmt->execute();
+    }
+
+    public function buscarPorAgendamento($agendamentoId) {
+        $sql = "SELECT * FROM EXAME_ABO WHERE agendamento_id = :agendamento_id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(":agendamento_id", $agendamentoId);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
+
+class ExameCovidDao {
+    private $conn;
+
+    public function __construct() {
+        $this->conn = ConnectionFactory::getConnection();
+    }
+
+    public function inserir($exameCovid) {
+        $sql = "INSERT INTO EXAME_COVID_19 (nome, amostra_dna, agendamento_id, paciente_id) 
+                VALUES (:nome, :amostra_dna, :agendamento_id, :paciente_id)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(":nome", $exameCovid->getNome());
+        $stmt->bindParam(":amostra_dna", $exameCovid->getAmostraDna());
+        $stmt->bindParam(":agendamento_id", $exameCovid->getAgendamentoId());
+        $stmt->bindParam(":paciente_id", $exameCovid->getPacienteId());
+        return $stmt->execute();
+    }
+
+    public function buscarPorAgendamento($agendamentoId) {
+        $sql = "SELECT * FROM EXAME_COVID_19 WHERE agendamento_id = :agendamento_id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(":agendamento_id", $agendamentoId);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+}
+
 ?>
+
