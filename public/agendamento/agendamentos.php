@@ -35,16 +35,32 @@
     <div class="container">
         <div class="row">
             <div class="col mx-4 mt-4">
+                <form method="get" class="row g-3 mb-4">
+                    <div class="col-auto">
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="cpf"
+                            placeholder="Buscar por CPF"
+                            value="<?= htmlspecialchars($_GET['cpf'] ?? '', ENT_QUOTES) ?>"
+                        >
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">Buscar</button>
+                        <a href="agendamentos.php" class="btn btn-secondary">Limpar</a>
+                    </div>
+                </form>
+            
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>Id</th> <th>Nome</th> <th>Data Consulta</th> <th>Exame</th> <th>Ações</th>
+                            <th>Id</th> <th>Nome do Paciente</th> <th>Data Consulta</th> <th>CPF</th> <th>Exame</th> <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
                          <?php
                          if($_SERVER["REQUEST_METHOD"] == "GET" || $_SERVER["REQUEST_METHOD"] == "POST"){
-                            require_once './controller/AgendamentoController.php';
+
                             listar();
                          }
                          ?>
@@ -60,3 +76,4 @@
         ?>
 </body>
 </html>
+
