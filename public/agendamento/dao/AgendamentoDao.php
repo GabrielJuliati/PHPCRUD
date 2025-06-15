@@ -1,106 +1,178 @@
-<?php 
+<?php
+require_once __DIR__ . '/../../connection/Connection.php';
+require_once("Agendamento.php");
+
 class AgendamentoDao {
 
+    private $apiUrl = 'http://localhost:3000/api/agendamentos';
+
+    private function makeApiRequest($url, $method = 'GET', $data = null) {
+        $ch = curl_init();
+        
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Accept: application/json'
+        ]);
+        
+        switch ($method) {
+            case 'POST':
+                curl_setopt($ch, CURLOPT_POST, true);
+                if ($data) {
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+                }
+                break;
+            case 'PUT':
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+                if ($data) {
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+                }
+                break;
+            case 'DELETE':
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+                break;
+        }
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($response === false) {
+            throw new Exception('Erro ao conectar com a API Node.js');
+        }
+        
+        $decodedResponse = json_decode($response, true);
+        
+        if ($httpCode >= 400) {
+            $errorMessage = isset($decodedResponse['message']) ? $decodedResponse['message'] : 'Erro na API';
+            throw new Exception($errorMessage);
+        }
+        
+        return $decodedResponse;
+    }
+
+    public function read() {
+        try {
+            $response = $this->makeApiRequest($this->apiUrl);
+            $agendamentos = [];
+            
+            if (isset($response['data']) && is_array($response['data'])) {
+                foreach ($response['data'] as $row) {
+                    $agendamentos[] = $this->listaAgendamento($row);
+                }
+            }
+            
+            return $agendamentos;
+        } catch (Exception $ex) {
+            echo "<p>Erro ao listar agendamentos: " . $ex->getMessage() . "</p>";
+            return [];
+        }
+    }
+
+    public function buscarPorCpf($cpf) {
+        try {
+            $url = $this->apiUrl . '/cpf/' . urlencode($cpf);
+            $response = $this->makeApiRequest($url);
+            $agendamentos = [];
+            
+            if (isset($response['data']) && is_array($response['data'])) {
+                foreach ($response['data'] as $row) {
+                    $agendamentos[] = $this->listaAgendamento($row);
+                }
+            }
+            
+            return $agendamentos;
+        } catch (Exception $ex) {
+            echo "<p>Erro ao buscar agendamentos por CPF: " . $ex->getMessage() . "</p>";
+            return [];
+        }
+    }
+
+    public function buscarPorId($id) {
+        try {
+            $url = $this->apiUrl . '/' . $id;
+            $response = $this->makeApiRequest($url);
+            
+            if (isset($response['data'])) {
+                $row = $response['data'];
+                $agendamento = new Agendamento();
+                $agendamento->setId($row["id"]);
+                $agendamento->setDataConsulta($row["data_consulta"]);
+                $agendamento->setPacienteId($row["paciente_id"]);
+                $agendamento->setPacienteNome($row["paciente_nome"]);
+                $agendamento->setPacienteCpf($row["paciente_cpf"]);
+                $agendamento->setTipoExame($row["tipo_exame"]);
+                return $agendamento;
+            }
+            
+            return null;
+        } catch (Exception $ex) {
+            echo "<p>Erro ao buscar agendamento por ID: " . $ex->getMessage() . "</p>";
+            return null;
+        }
+    }
+
+    public function delete($id) {
+        try {
+            $url = $this->apiUrl . '/' . $id;
+            $response = $this->makeApiRequest($url, 'DELETE');
+            return $response['success'] ?? false;
+        } catch (Exception $ex) {
+            echo "<p>Erro ao excluir agendamento: " . $ex->getMessage() . "</p>";
+            return false;
+        }
+    }
+
     public function inserir($agendamento) {
-        $conn = ConnectionFactory::getConnection();
-        $sql = "INSERT INTO agendamento (paciente_id, data_consulta, tipo_exame) VALUES (:paciente_id, :data_consulta, :tipo_exame)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(":paciente_id", $agendamento->getPacienteId());
-        $stmt->bindParam(":data_consulta", $agendamento->getDataConsulta());
-        $stmt->bindParam(":tipo_exame", $agendamento->getTipoExame());
-        return $stmt->execute();
+        try {
+            $data = [
+                'paciente_id' => $agendamento->getPacienteId(),
+                'data_consulta' => $agendamento->getDataConsulta(),
+                'tipo_exame' => $agendamento->getTipoExame()
+            ];
+            
+            $response = $this->makeApiRequest($this->apiUrl, 'POST', $data);
+            return $response['success'] ?? false;
+        } catch (Exception $ex) {
+            echo "<p>Erro ao inserir agendamento: " . $ex->getMessage() . "</p>";
+            return false;
+        }
     }
 
     public function atualizar(Agendamento $agd) {
-        $conn = ConnectionFactory::getConnection();
-        $sql = "UPDATE agendamento SET data_consulta = :data, paciente_id = :paciente_id, tipo_exame = :tipo_exame WHERE id = :id";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindValue(":data", $agd->getDataConsulta());
-        $stmt->bindValue(":paciente_id", $agd->getPacienteId());
-        $stmt->bindValue(":tipo_exame", $agd->getTipoExame());
-        $stmt->bindValue(":id", $agd->getId(), PDO::PARAM_INT);
-        return $stmt->execute();
-    }
-
-  public function delete($id) {
-    try {
-        $conn = ConnectionFactory::getConnection();
-        $sql = "DELETE FROM agendamento WHERE agendamento.id = :id";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindValue(":id", $id, PDO::PARAM_INT);
-        return $stmt->execute();
-    } catch (PDOException $e) {
-        echo "Erro ao excluir: " . $e->getMessage();
-        return false;
-    }
-}
-
-    public function read() {
-        $sql = "SELECT a.id, a.data_consulta, a.tipo_exame, p.nome AS paciente_nome, p.cpf AS paciente_cpf 
-                FROM agendamento a 
-                JOIN paciente p ON a.paciente_id = p.id";
-        $conn = ConnectionFactory::getConnection();
-        $stmt = $conn->query($sql);
-        $agendamentos = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $agendamentos[] = $this->listaAgendamento($row);
-        }   
-        return $agendamentos;
-    }
-
-    public function listaAgendamento($row) {
-        $agendamento = new Agendamento();
-        $agendamento->setId($row['id']);
-        $agendamento->setPacienteNome($row['paciente_nome']);
-        $agendamento->setDataConsulta($row['data_consulta']);
-        $agendamento->setPacienteCpf($row['paciente_cpf']);
-        $agendamento->setTipoExame($row['tipo_exame']);
-        return $agendamento; 
-    }
-    
-public function buscarPorId($id) {
-    $conn = ConnectionFactory::getConnection();
-    $sql = "SELECT a.id, a.data_consulta, a.tipo_exame, 
-                   a.paciente_id, p.nome AS paciente_nome, p.cpf AS paciente_cpf 
-            FROM agendamento a 
-            JOIN paciente p ON a.paciente_id = p.id 
-            WHERE a.id = :id";
-    $stmt = $conn->prepare($sql);
-    $stmt->bindValue(":id", $id, PDO::PARAM_INT);
-    $stmt->execute();
-
-    if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) { // Use FETCH_ASSOC for consistency
-        $agd = new Agendamento();
-        $agd->setId($row["id"]);
-        $agd->setDataConsulta($row["data_consulta"]);
-        $agd->setPacienteId($row["paciente_id"]); // Set patient_id
-        $agd->setPacienteNome($row["paciente_nome"]); // Set patient_name from join
-        $agd->setPacienteCpf($row["paciente_cpf"]);   // Set patient_cpf from join
-        $agd->setTipoExame($row["tipo_exame"]); // Set tipo_exame_string
-        return $agd;
-    }
-
-    return null;
-}
-
-
-    public function buscarPorCpf($cpf) {
-        $conn = ConnectionFactory::getConnection();
-        $sql = "SELECT a.id, a.data_consulta, a.tipo_exame, p.nome AS paciente_nome, p.cpf AS paciente_cpf 
-                FROM agendamento a 
-                JOIN paciente p ON a.paciente_id = p.id 
-                WHERE p.cpf LIKE :cpf";
-        $stmt = $conn->prepare($sql);
-        $searchTerm = '%' . $cpf . '%';
-
-        $stmt->bindParam(":cpf", $searchTerm);
-        $stmt->execute();
-        $agendamentos = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $agendamentos[] = $this->listaAgendamento($row);
+        try {
+            $data = [
+                'paciente_id' => $agd->getPacienteId(),
+                'data_consulta' => $agd->getDataConsulta(),
+                'tipo_exame' => $agd->getTipoExame()
+            ];
+            
+            $url = $this->apiUrl . '/' . $agd->getId();
+            $response = $this->makeApiRequest($url, 'PUT', $data);
+            return $response['success'] ?? false;
+        } catch (Exception $ex) {
+            echo "<p>Erro ao atualizar agendamento: " . $ex->getMessage() . "</p>";
+            return false;
         }
-        return $agendamentos;
     }
 
+    private function listaAgendamento($row) {
+        $agendamento = new Agendamento();
+        $agendamento->setId($row["id"]);
+        $agendamento->setDataConsulta($row["data_consulta"]);
+        $agendamento->setPacienteNome($row["paciente_nome"]);
+        $agendamento->setPacienteCpf($row["paciente_cpf"]);
+        $agendamento->setTipoExame($row["tipo_exame"]);
+        
+        // Set paciente_id if available
+        if (isset($row["paciente_id"])) {
+            $agendamento->setPacienteId($row["paciente_id"]);
+        }
+        
+        return $agendamento;
+    }
 }
+
 ?>
+

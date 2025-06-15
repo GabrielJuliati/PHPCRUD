@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const PacienteDao = require('./pacienteDao');
+const AgendamentoDao = require("./agendamentoDao");
 
 //Perguntar o motivo de usar o cors
 app.use(cors());
@@ -178,25 +179,181 @@ app.delete("/api/pacientes/:id", async (req, res) => {
 
 //------------------------------------------------------------------------------------------
 
-app.get("/public/agendamento/gestãoAgendamento", (req, res) => {
+const agendamentoDao = new AgendamentoDao;
+
+// GET /api/agendamentos - Listar todos os agendamentos
+app.get('/api/agendamentos', async (req, res) => {
+    try {
+        const agendamentos = await agendamentoDao.read();
+        res.json({
+            success: true,
+            data: agendamentos
+        });
+    } catch (error) {
+        console.error('Erro ao listar agendamentos:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro interno do servidor',
+            error: error.message
+        });
+    }
 });
 
-app.get("/public/agendamento/cadastro", (req, res) => {
+// GET /api/agendamentos/:id - Buscar agendamento por ID
+app.get('/api/agendamentos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const agendamento = await agendamentoDao.buscarPorId(id);
+        
+        if (!agendamento) {
+            return res.status(404).json({
+                success: false,
+                message: 'Agendamento não encontrado'
+            });
+        }
+        
+        res.json({
+            success: true,
+            data: agendamento
+        });
+    } catch (error) {
+        console.error('Erro ao buscar agendamento por ID:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro interno do servidor',
+            error: error.message
+        });
+    }
 });
 
-app.get("/public/agendamento/agendamentos", (req, res) => {
+// GET /api/agendamentos/cpf/:cpf - Buscar agendamentos por CPF
+app.get('/api/agendamentos/cpf/:cpf', async (req, res) => {
+    try {
+        const { cpf } = req.params;
+        const agendamentos = await agendamentoDao.buscarPorCpf(cpf);
+        
+        res.json({
+            success: true,
+            data: agendamentos
+        });
+    } catch (error) {
+        console.error('Erro ao buscar agendamentos por CPF:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro interno do servidor',
+            error: error.message
+        });
+    }
 });
 
-app.get("/public/agendamento/editar", (req, res) => {
+// POST /api/agendamentos - Criar novo agendamento
+app.post('/api/agendamentos', async (req, res) => {
+    try {
+        const { paciente_id, data_consulta, tipo_exame } = req.body;
+        
+        // Validação básica
+        if (!paciente_id || !data_consulta || !tipo_exame) {
+            return res.status(400).json({
+                success: false,
+                message: 'Campos obrigatórios: paciente_id, data_consulta, tipo_exame'
+            });
+        }
+        
+        const result = await agendamentoDao.inserir(paciente_id, data_consulta, tipo_exame);
+        
+        res.status(201).json({
+            success: true,
+            message: 'Agendamento criado com sucesso',
+            data: {
+                id: result.insertId,
+                paciente_id,
+                data_consulta,
+                tipo_exame
+            }
+        });
+    } catch (error) {
+        console.error('Erro ao criar agendamento:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro interno do servidor',
+            error: error.message
+        });
+    }
 });
 
-app.get("/public/agendamento/controller/agendamentoController", (req, res) => {
+// PUT /api/agendamentos/:id - Atualizar agendamento
+app.put('/api/agendamentos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { paciente_id, data_consulta, tipo_exame } = req.body;
+        
+        // Validação básica
+        if (!paciente_id || !data_consulta || !tipo_exame) {
+            return res.status(400).json({
+                success: false,
+                message: 'Campos obrigatórios: paciente_id, data_consulta, tipo_exame'
+            });
+        }
+        
+        // Verificar se o agendamento existe
+        const agendamentoExistente = await agendamentoDao.buscarPorId(id);
+        if (!agendamentoExistente) {
+            return res.status(404).json({
+                success: false,
+                message: 'Agendamento não encontrado'
+            });
+        }
+        
+        const result = await agendamentoDao.atualizar(id, paciente_id, data_consulta, tipo_exame);
+        
+        res.json({
+            success: true,
+            message: 'Agendamento atualizado com sucesso',
+            data: {
+                id,
+                paciente_id,
+                data_consulta,
+                tipo_exame
+            }
+        });
+    } catch (error) {
+        console.error('Erro ao atualizar agendamento:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro interno do servidor',
+            error: error.message
+        });
+    }
 });
 
-app.get("/public/agendamento/dao/agendamentoDao", (req, res) => {
-});
-
-app.get("/public/agendamento/processamento/processamento", (req, res) => {
+// DELETE /api/agendamentos/:id - Excluir agendamento
+app.delete('/api/agendamentos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        // Verificar se o agendamento existe
+        const agendamentoExistente = await agendamentoDao.buscarPorId(id);
+        if (!agendamentoExistente) {
+            return res.status(404).json({
+                success: false,
+                message: 'Agendamento não encontrado'
+            });
+        }
+        
+        await agendamentoDao.delete(id);
+        
+        res.json({
+            success: true,
+            message: 'Agendamento excluído com sucesso'
+        });
+    } catch (error) {
+        console.error('Erro ao excluir agendamento:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro interno do servidor',
+            error: error.message
+        });
+    }
 });
 
 app.get("/public/exames/exames", (req, res) => {
