@@ -17,7 +17,7 @@
 <body>
     
     <?php
-      include('../../modelo/nav.php');
+      include('../../modelo/nav.php' );
     ?>
 
     <?php
@@ -35,15 +35,23 @@
         <div class="row">
             <div class="col"></div>
             <div class="col">
-                <h1 class="text-center m-5">Agendamento</h1>
+                <h1 class="text-center m-5">Editar Agendamento</h1>
                 <div>
                     <form method="POST" action="controller/AgendamentoController.php">
                         <input type="hidden" name="id" value="<?= $agendamentoParaEditar ? $agendamentoParaEditar->getId() : '' ?>">
+                        <!-- Changed to paciente_id to match your database schema -->
+                        <input type="hidden" name="paciente_id" value="<?= $agendamentoParaEditar ? $agendamentoParaEditar->getPacienteId() : '' ?>">
 
                         <div class="mb-3 text-center">
-                            <label>Nome:</label>
-                            <input type="text" name="nome" class="form-control" required
-                                value="<?= $agendamentoParaEditar ? $agendamentoParaEditar->getNome() : '' ?>">
+                            <label>Nome do Paciente:</label>
+                            <input type="text" class="form-control" 
+                                value="<?= $agendamentoParaEditar ? $agendamentoParaEditar->getPacienteNome() : '' ?>" disabled>
+                        </div>
+
+                        <div class="mb-3 text-center">
+                            <label>CPF do Paciente:</label>
+                            <input type="text" class="form-control" 
+                                value="<?= $agendamentoParaEditar ? $agendamentoParaEditar->getPacienteCpf() : '' ?>" disabled>
                         </div>
 
                         <div class="mb-3 text-center">
@@ -55,9 +63,10 @@
                         <div class="mt-3 text-center">
                             <label for="tipo_exame" class="form-label">Tipo do Exame:</label>
                             <select id="tipo_exame" name="tipo_exame" class="form-select" required>
-                                <option value="ABO - Tipo Sanguíneo">ABO - Tipo Sanguíneo</option>
-                                <option value="Dengue">Dengue</option>
-                                <option value="COVID 19">COVID 19</option>
+                                <option value="">Selecione um exame</option>
+                                <option value="Dengue" <?= ($agendamentoParaEditar && $agendamentoParaEditar->getTipoExame() == 'Dengue') ? 'selected' : '' ?>>Dengue</option>
+                                <option value="ABO" <?= ($agendamentoParaEditar && $agendamentoParaEditar->getTipoExame() == 'ABO') ? 'selected' : '' ?>>ABO - Tipo Sanguíneo</option>
+                                <option value="COVID-19" <?= ($agendamentoParaEditar && $agendamentoParaEditar->getTipoExame() == 'COVID-19') ? 'selected' : '' ?>>COVID-19</option>
                             </select>
                         </div>
                         <div class="mt-3 text-center">

@@ -30,17 +30,6 @@
 
     <div class="container">
         <div class="row d-flex justify-content-center align-items-center mt-5">
-
-            <div class="col-md-4 ">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Cadastrar</h5>
-                        <p class="card-text">Cadastre um exa,e.</p>
-                        <a href="cadastro.php" class="btn btn-primary">Acessar</a>
-                    </div>
-                </div>
-            </div>
-
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-body">
