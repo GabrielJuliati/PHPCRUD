@@ -1,5 +1,15 @@
 const mysql = require('mysql2/promise');
 
+const { format: dateFnsFormat } = require('date-fns/format');
+
+function formatarData(data) {
+    return dateFnsFormat(new Date(data), 'dd/MM/yyyy');
+}
+
+function formataDataEUA(data) {
+    return dateFnsFormat(new Date(data), 'yyyy/MM/dd');
+}
+
 class PacienteDao {
     constructor() {
         this.config = {
@@ -42,8 +52,12 @@ class PacienteDao {
         try {
             connection = await this.getConnection();
             const sql = 'SELECT * FROM paciente';
-            const [rows] = await connection.execute(sql);
-            return rows;
+            const [result] = await connection.execute(sql);
+            const pacientes = result.map(paciente => {
+                paciente.data_nascimento = formatarData(paciente.data_nascimento);
+                return paciente;
+            });
+            return pacientes;
         } catch (error) {
             console.error('Erro ao listar pacientes:', error);
             throw error;
@@ -90,8 +104,12 @@ class PacienteDao {
         try {
             connection = await this.getConnection();
             const sql = 'SELECT * FROM paciente WHERE cpf LIKE ?';
-            const [rows] = await connection.execute(sql, [`%${cpf}%`]);
-            return rows;
+            const [result] = await connection.execute(sql, [`%${cpf}%`]);
+            const pacientes = result.map(paciente => {
+                paciente.data_nascimento = formatarData(paciente.data_nascimento);
+                return paciente;
+            });
+            return pacientes;
         } catch (error) {
             console.error('Erro ao buscar paciente por CPF:', error);
             throw error;
@@ -105,8 +123,12 @@ class PacienteDao {
         try {
             connection = await this.getConnection();
             const sql = 'SELECT * FROM paciente WHERE id = ?';
-            const [rows] = await connection.execute(sql, [id]);
-            return rows[0];
+            const [result] = await connection.execute(sql, [id]);
+            const pacientes = result.map(paciente => {
+                paciente.data_nascimento = formataDataEUA(paciente.data_nascimento);
+                return paciente;
+            });
+            return pacientes[0];
         } catch (error) {
             console.error('Erro ao buscar paciente por ID:', error);
             throw error;
