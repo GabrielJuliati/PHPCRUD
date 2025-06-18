@@ -59,17 +59,18 @@ function listar() {
 
     if (!empty($cpfFiltro)) {
         $lista = $pacienteDao->buscarPorCpf($cpfFiltro);
+        if(empty($lista)) {
+            echo "<tr class='text-center'><td colspan='7'>Nenhum paciente encontrado com o CPF informado.</td></tr>";
+        }
     } else {
         $lista = $pacienteDao->listarTodos();
     }
 
     foreach ($lista as $pac) {
-        $dataFormatada = date('d/m/Y', strtotime($pac['data_nascimento']));
-
         echo "<tr>
                 <td>{$pac['CPF']}</td>
                 <td>{$pac['nome']}</td>
-                <td>{$dataFormatada}</td>
+                <td>{$pac['data_nascimento']}</td>
                 <td>{$pac['endereco']}</td>
                 <td>{$pac['telefone']}</td>
                 <td>{$pac['observacoes']}</td>
