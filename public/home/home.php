@@ -63,7 +63,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Relatórios</h5>
                         <p class="card-text">Gere relatórios de atendimentos.</p>
-                        <a href="../relatorio/relatatorio.php" class="btn btn-primary">Acessar</a>
+                        <a href="../relatorio/relatorio.php" class="btn btn-primary">Acessar</a>
                     </div>
                 </div>
             </div>
