@@ -8,6 +8,11 @@ class ExameDengue {
     private $amostraSangue;
     private $dataInicioSintomas;
 
+    public $dataConsulta;
+    public $pacienteNome;
+    public $pacienteCpf;
+    public $tipoExame;
+
     // Constructor
     public function __construct() {}
 
@@ -70,6 +75,11 @@ class ExameABO {
     private $amostraDna;
     private $tipoSanguineo;
     private $observacoes;
+
+    public $dataConsulta;
+    public $pacienteNome;
+    public $pacienteCpf;
+    public $tipoExame;
 
     // Constructor
     public function __construct() {}
@@ -144,6 +154,11 @@ class ExameCovid {
     private $dataInicioSintomas;
     private $sintomas;
     private $observacoes;
+
+    public $dataConsulta;
+    public $pacienteNome;
+    public $pacienteCpf;
+    public $tipoExame;
 
     // Constructor
     public function __construct() {}

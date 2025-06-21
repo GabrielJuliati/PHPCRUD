@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../connection/Connection.php';
-require_once __DIR__ . '/../model/Agendamento.php';
+
+require_once(__DIR__ . '/../model/Agendamento.php');
 
 class AgendamentoDao {
     
