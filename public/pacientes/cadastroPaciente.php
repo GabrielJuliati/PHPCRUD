@@ -62,17 +62,35 @@
 
                     <input type="hidden" name="id" value="<?= $pacienteEdicao['id'] ?? '' ?>">
 
-                    <div class="form-group mt-3">
-                        <label for="nome">Nome:</label>
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="nome"
-                            name="nome"
-                            value="<?= $pacienteEdicao['nome'] ?? '' ?>"
-                            required
-                        >
-                    </div>
+                    <?php if (isset($_SESSION["rol"]) && $_SESSION["rol"] == 'ADM') { ?>
+                        <div class="form-group mt-3">
+                            <label for="nome">Nome:</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="nome"
+                                name="nome"
+                                value="<?= $pacienteEdicao['nome'] ?? '' ?>"
+                                required
+                            >
+                        </div>
+                    <?php } else { ?>
+                        <div class="form-group mt-3">
+                            <label for="nome">Nome:</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="nome"
+                                name="nome"
+                                value=""
+                                <?php if (isset($pacienteEdicao['nome'])){ ?>
+                                    disabled
+                                <?php }else{ ?>
+                                    require
+                                <?php } ?>
+                            >
+                        </div>
+                    <?php } ?>
 
                     <div class="form-group mt-3">
                         <label for="nascimento">Data de nascimento:</label>
