@@ -59,7 +59,7 @@
                                 <a href="cadastro.php" class="btn btn-success">
                                     <i class="bi bi-plus-circle"></i> Novo Exame
                                 </a>
-                                <a href="agendamentos.php" class="btn btn-secondary">
+                                <a href="../agendamento/agendamentos.php" class="btn btn-secondary">
                                     <i class="bi bi-calendar-check"></i> Agendamentos
                                 </a>
                             </div>
@@ -167,7 +167,7 @@
                                                     Nenhum exame cadastrado ainda.
                                                 <?php endif; ?>
                                                 <br>
-                                                <a href="cadastro_exame_dinamico.php" class="btn btn-primary mt-2">
+                                                <a href="cadastro.php" class="btn btn-primary mt-2">
                                                     <i class="bi bi-plus-circle"></i> Cadastrar Primeiro Exame
                                                 </a>
                                             </td>
@@ -298,4 +298,3 @@
 
 </body>
 </html>
-

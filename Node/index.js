@@ -356,27 +356,315 @@ app.delete('/api/agendamentos/:id', async (req, res) => {
     }
 });
 
-app.get("/public/exames/exames", (req, res) => {
+// GET /api/exames - Listar todos os exames (com filtro opcional por tipo)
+app.get("/api/exames", async (req, res) => {
+    try {
+        const { tipo } = req.query;
+        let exames = [];
+
+        if (!tipo) {
+            // Busca todos os tipos de exame
+            const [dengue, abo, covid] = await Promise.all([
+                exameDengueDao.buscarTodos(),
+                exameABODao.buscarTodos(),
+                exameCovidDao.buscarTodos()
+            ]);
+            exames = [...dengue, ...abo, ...covid];
+        } else {
+            // Filtra por tipo específico
+            switch (tipo.toLowerCase()) {
+                case 'dengue':
+                    exames = await exameDengueDao.buscarTodos();
+                    break;
+                case 'abo':
+                    exames = await exameABODao.buscarTodos();
+                    break;
+                case 'covid':
+                    exames = await exameCovidDao.buscarTodos();
+                    break;
+                default:
+                    return res.status(400).json({
+                        success: false,
+                        message: "Tipo de exame inválido. Use: dengue, abo ou covid"
+                    });
+            }
+        }
+
+        // Ordenar por data (se disponível em todos os tipos)
+        exames.sort((a, b) => new Date(b.dataConsulta) - new Date(a.dataConsulta));
+
+        res.status(200).json({
+            success: true,
+            data: exames,
+            message: "Exames listados com sucesso"
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Erro ao listar exames",
+            error: error.message
+        });
+    }
 });
 
-app.get("/public/exames/cadastro", (req, res) => {
+// POST /api/exames - Criar novo exame (determina o tipo pelo body)
+app.post("/api/exames", async (req, res) => {
+    try {
+        const { tipo } = req.body;
+        
+        if (!tipo) {
+            return res.status(400).json({
+                success: false,
+                message: "Tipo de exame é obrigatório (dengue, abo ou covid)"
+            });
+        }
+
+        let result;
+        switch (tipo.toLowerCase()) {
+            case 'dengue':
+                const exameDengue = new ExameDengue();
+                // Configura os campos do exame dengue...
+                result = await exameDengueDao.inserir(exameDengue);
+                break;
+            case 'abo':
+                const exameABO = new ExameABO();
+                // Configura os campos do exame ABO...
+                result = await exameABODao.inserir(exameABO);
+                break;
+            case 'covid':
+                const exameCovid = new ExameCovid();
+                // Configura os campos do exame COVID...
+                result = await exameCovidDao.inserir(exameCovid);
+                break;
+            default:
+                return res.status(400).json({
+                    success: false,
+                    message: "Tipo de exame inválido. Use: dengue, abo ou covid"
+                });
+        }
+
+        res.status(201).json({
+            success: true,
+            data: result,
+            message: `Exame de ${tipo} criado com sucesso`
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Erro ao criar exame",
+            error: error.message
+        });
+    }
 });
 
-app.get("/public/exames/editar", (req, res) => {
+// PUT /api/exames/:id - Atualizar exame (funciona para qualquer tipo)
+app.put("/api/exames/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { tipo } = req.body;
+        
+        if (!tipo) {
+            return res.status(400).json({
+                success: false,
+                message: "Tipo de exame é obrigatório (dengue, abo ou covid)"
+            });
+        }
+
+        // Primeiro verifica se o exame existe
+        let exameExistente = await exameDengueDao.buscarPorId(id) || 
+                            await exameABODao.buscarPorId(id) || 
+                            await exameCovidDao.buscarPorId(id);
+
+        if (!exameExistente) {
+            return res.status(404).json({
+                success: false,
+                message: "Exame não encontrado"
+            });
+        }
+
+        let result;
+        switch (tipo.toLowerCase()) {
+            case 'dengue':
+                // Validação dos campos obrigatórios
+                if (!req.body.nome) {
+                    return res.status(400).json({
+                        success: false,
+                        message: "Nome é obrigatório para exame de dengue"
+                    });
+                }
+
+                const exameDengue = new ExameDengue();
+                exameDengue.setId(id);
+                exameDengue.setNome(req.body.nome);
+                exameDengue.setAmostraSangue(req.body.amostra_sangue || exameExistente.amostra_sangue);
+                exameDengue.setDataInicioSintomas(req.body.data_inicio_sintomas || exameExistente.data_inicio_sintomas);
+                
+                result = await exameDengueDao.atualizar(exameDengue);
+                break;
+
+            case 'abo':
+                // Validação dos campos obrigatórios
+                if (!req.body.nome || !req.body.tipo_sanguineo) {
+                    return res.status(400).json({
+                        success: false,
+                        message: "Nome e tipo sanguíneo são obrigatórios para exame ABO"
+                    });
+                }
+
+                const exameABO = new ExameABO();
+                exameABO.setId(id);
+                exameABO.setNome(req.body.nome);
+                exameABO.setAmostraDna(req.body.amostra_dna || exameExistente.amostra_dna);
+                exameABO.setTipoSanguineo(req.body.tipo_sanguineo);
+                exameABO.setObservacoes(req.body.observacoes || exameExistente.observacoes);
+                
+                result = await exameABODao.atualizar(exameABO);
+                break;
+
+            case 'covid':
+                // Validação dos campos obrigatórios
+                if (!req.body.nome || !req.body.tipo_teste) {
+                    return res.status(400).json({
+                        success: false,
+                        message: "Nome e tipo de teste são obrigatórios para exame COVID-19"
+                    });
+                }
+
+                const exameCovid = new ExameCovid();
+                exameCovid.setId(id);
+                exameCovid.setNome(req.body.nome);
+                exameCovid.setTipoTeste(req.body.tipo_teste);
+                exameCovid.setStatusAmostra(req.body.status_amostra || exameExistente.status_amostra);
+                exameCovid.setResultado(req.body.resultado || exameExistente.resultado);
+                exameCovid.setDataInicioSintomas(req.body.data_inicio_sintomas || exameExistente.data_inicio_sintomas);
+                exameCovid.setSintomas(req.body.sintomas || exameExistente.sintomas);
+                exameCovid.setObservacoes(req.body.observacoes || exameExistente.observacoes);
+                
+                result = await exameCovidDao.atualizar(exameCovid);
+                break;
+
+            default:
+                return res.status(400).json({
+                    success: false,
+                    message: "Tipo de exame inválido. Use: dengue, abo ou covid"
+                });
+        }
+
+        if (!result) {
+            return res.status(500).json({
+                success: false,
+                message: "Falha ao atualizar o exame"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: `Exame de ${tipo} atualizado com sucesso`,
+            data: {
+                id,
+                tipo,
+                updatedFields: req.body
+            }
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Erro ao atualizar exame",
+            error: error.message
+        });
+    }
 });
 
-app.get("/public/exames/gestaoExames", (req, res) => {
+// DELETE /api/exames/:id - Deletar exame (funciona para qualquer tipo)
+app.delete("/api/exames/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        let deleted = false;
+
+        // Tenta deletar em cada DAO até conseguir
+        deleted = await exameDengueDao.deletar(id) || 
+                 await exameABODao.deletar(id) || 
+                 await exameCovidDao.deletar(id);
+
+        if (!deleted) {
+            return res.status(404).json({
+                success: false,
+                message: "Exame não encontrado"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Exame deletado com sucesso"
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Erro ao deletar exame",
+            error: error.message
+        });
+    }
 });
 
-app.get("/public/exames/dao/examesDao", (req, res) => {
+// GET /api/exames/agendamento/:agendamento_id - Buscar exames por agendamento
+app.get("/api/exames/agendamento/:agendamento_id", async (req, res) => {
+    try {
+        const { agendamento_id } = req.params;
+        
+        const [dengue, abo, covid] = await Promise.all([
+            exameDengueDao.buscarPorAgendamento(agendamento_id),
+            exameABODao.buscarPorAgendamento(agendamento_id),
+            exameCovidDao.buscarPorAgendamento(agendamento_id)
+        ]);
+
+        const exames = [...dengue, ...abo, ...covid];
+
+        res.status(200).json({
+            success: true,
+            data: exames,
+            message: "Exames por agendamento listados com sucesso"
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Erro ao buscar exames por agendamento",
+            error: error.message
+        });
+    }
 });
 
-app.get("/public/exames/controller/examesController", (req, res) => {
-});
+// GET /api/exames/:id - Buscar exame por ID (funciona para qualquer tipo)
+app.get("/api/exames/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        let exame = null;
 
-app.get("/public/exames/processamento/processamento", (req, res) => {
-});
+        // Tenta encontrar em cada tipo de exame
+        exame = await exameDengueDao.buscarPorId(id) || 
+                await exameABODao.buscarPorId(id) || 
+                await exameCovidDao.buscarPorId(id);
 
+        if (!exame) {
+            return res.status(404).json({
+                success: false,
+                message: "Exame não encontrado"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: exame,
+            message: "Exame encontrado com sucesso"
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Erro ao buscar exame",
+            error: error.message
+        });
+    }
+});
 
 //------------------------------------------------------------------------------------------
 
