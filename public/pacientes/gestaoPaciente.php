@@ -74,7 +74,11 @@
             <thead>
                 <tr>
                     <th>CPF</th>
-                    <th>Nome</th>
+                    <?php
+                    if (isset($_SESSION["rol"]) && $_SESSION["rol"] == 'ADM') {
+                        echo "<th>Nome</th>";
+                    }
+                    ?>
                     <th>Data de Nascimento</th>
                     <th>Endereço</th>
                     <th>Telefone</th>

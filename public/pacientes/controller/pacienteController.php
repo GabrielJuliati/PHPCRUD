@@ -69,8 +69,13 @@ function listar() {
     foreach ($lista as $pac) {
         echo "<tr>
                 <td>{$pac['CPF']}</td>
-                <td>{$pac['nome']}</td>
-                <td>{$pac['data_nascimento']}</td>
+                ";
+
+        if (isset($_SESSION["rol"]) && $_SESSION["rol"] == 'ADM') {
+            echo "<td>{$pac['nome']}</td>";
+        }
+
+        echo "<td>{$pac['data_nascimento']}</td>
                 <td>{$pac['endereco']}</td>
                 <td>{$pac['telefone']}</td>
                 <td>{$pac['observacoes']}</td>
