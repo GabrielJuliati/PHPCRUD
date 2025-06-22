@@ -4,13 +4,14 @@ import java.util.List;
 
 import relatorio.model.Relatorio;
 import relatorio.service.RelatorioService;
-import relatorio.dao.RelatorioDao;
+import relatorio.dao.RelatorioDao; // <--- DESCOMENTE OU ADICIONE ESTA LINHA!
 
 public class RelatorioController {
     private RelatorioService service;
 
     public RelatorioController() {
-        this.service = new RelatorioService(new RelatorioDao());
+        // Agora, RelatorioDao será resolvido corretamente
+        this.service = new RelatorioService(new RelatorioDao()); 
     }
 
     public void adicionarRelatorio(Relatorio relatorio) {
@@ -21,9 +22,13 @@ public class RelatorioController {
         return service.listar();
     }
 
-    public void editarRelatorio(int id, String novoTipoExame, String novaDataExame) {
+    public Relatorio buscarPorId(int id) {
+        return service.buscarPorId(id);
+    }
+
+    public void editarRelatorio(int id, String novoTipoExame, String novaDataExame, String novoResultado, String novaObservacao) {
         Relatorio relatorio = service.buscarPorId(id);
-        service.editar(relatorio, novoTipoExame, novaDataExame);
+        service.editar(relatorio, novoTipoExame, novaDataExame, novoResultado, novaObservacao);
     }
 
     public void excluirRelatorio(int id) {

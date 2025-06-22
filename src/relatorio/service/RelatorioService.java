@@ -24,15 +24,18 @@ public class RelatorioService {
         return relatorioDao.buscarPorId(id);
     }
 
-    public void editar(Relatorio relatorio, String novoTipoExame, String novaDataExame) {
+    // Método editar atualizado para incluir os novos campos
+    public void editar(Relatorio relatorio, String novoTipoExame, String novaDataExame, String novoResultado, String novaObservacao) {
         if (relatorio != null) {
             relatorio.setTipoExame(novoTipoExame);
             relatorio.setDataExame(novaDataExame);
-            relatorioDao.atualizar(relatorio); // isso já salva no arquivo
+            relatorio.setResultado(novoResultado);   // NOVO: Define o novo resultado
+            relatorio.setObservacao(novaObservacao); // NOVO: Define a nova observação
+            relatorioDao.atualizar(relatorio);
         }
     }
 
     public void excluir(Relatorio relatorio) {
-        relatorioDao.excluir(relatorio); // também salva no arquivo
+        relatorioDao.excluir(relatorio);
     }
 }

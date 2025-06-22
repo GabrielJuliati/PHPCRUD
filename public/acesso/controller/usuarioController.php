@@ -82,7 +82,7 @@ if (isset($_POST['login'])) {
         exit;
     }
 
-    $_SESSION["id"] = $usuario["id"];
+    $_SESSION['id'] = $usuario['id'];
     $_SESSION['nome'] = $usuario['nome'];
     $_SESSION['rol']  = $usuario['rol'];
     $_SESSION['email'] = $usuario['email'];

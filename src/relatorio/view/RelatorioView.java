@@ -11,8 +11,13 @@ public class RelatorioView {
 
     private RelatorioController controller = new RelatorioController();
     private Scanner scanner = new Scanner(System.in);
-    private int idRelatorio = 1;
-    private int idPaciente = 1;
+    private int proximoIdRelatorio;
+    private int proximoIdPaciente;
+
+    public RelatorioView() {
+        this.proximoIdRelatorio = relatorio.dao.RelatorioDao.getProximoId(); // Garante ID sequencial ao iniciar
+        this.proximoIdPaciente = 1; 
+    }
 
     public void menu() {
         int opcao;
@@ -53,7 +58,10 @@ public class RelatorioView {
         System.out.println("\n--- Novo Relatório ---");
         System.out.print("Nome do Paciente: ");
         String nomePaciente = scanner.nextLine();
-        Paciente paciente = new Paciente(idPaciente++, nomePaciente);
+        Paciente paciente = new Paciente(proximoIdPaciente++, nomePaciente);
+
+        System.out.print("CPF do Paciente (apenas números): ");
+        String cpfPaciente = scanner.nextLine();
 
         System.out.print("Tipo do Exame: ");
         String tipoExame = scanner.nextLine();
@@ -61,10 +69,19 @@ public class RelatorioView {
         System.out.print("Data do Exame (dd/mm/aaaa): ");
         String dataExame = scanner.nextLine();
 
-        Relatorio relatorio = new Relatorio(idRelatorio++, paciente, tipoExame, dataExame);
-        controller.adicionarRelatorio(relatorio);
+        // Alterado o prompt para incluir "Em andamento"
+        System.out.print("Resultado (Positivado/Negativado/Em andamento): "); 
+        String resultado = scanner.nextLine();
 
-        System.out.println("Relatório adicionado com sucesso!");
+        System.out.print("Observação (opcional): ");
+        String observacao = scanner.nextLine();
+
+        int idRelatorioGerado = relatorio.dao.RelatorioDao.getProximoId(); // Chama o método para obter o próximo ID
+        Relatorio relatorio = new Relatorio(idRelatorioGerado, paciente, tipoExame, dataExame,
+                                            cpfPaciente, resultado, observacao);
+        
+        controller.adicionarRelatorio(relatorio);
+        System.out.println("Relatório adicionado com sucesso! ID: " + idRelatorioGerado);
     }
 
     private void listarRelatorios() {
@@ -85,13 +102,26 @@ public class RelatorioView {
         int id = scanner.nextInt();
         scanner.nextLine();
 
-        System.out.print("Novo tipo de exame: ");
+        Relatorio relatorioExistente = controller.buscarPorId(id);
+        if (relatorioExistente == null) {
+            System.out.println("Relatório com ID " + id + " não encontrado.");
+            return;
+        }
+        
+        System.out.print("Novo tipo de exame (atual: " + relatorioExistente.getTipoExame() + "): ");
         String novoTipo = scanner.nextLine();
 
-        System.out.print("Nova data do exame (dd/mm/aaaa): ");
+        System.out.print("Nova data do exame (dd/mm/aaaa, atual: " + relatorioExistente.getDataExame() + "): ");
         String novaData = scanner.nextLine();
+        
+        // Alterado o prompt para incluir "Em andamento"
+        System.out.print("Novo resultado (Positivado/Negativado/Em andamento, atual: " + relatorioExistente.getResultado() + "): ");
+        String novoResultado = scanner.nextLine();
+        
+        System.out.print("Nova observação (atual: " + (relatorioExistente.getObservacao() != null ? relatorioExistente.getObservacao() : "N/A") + "): ");
+        String novaObservacao = scanner.nextLine();
 
-        controller.editarRelatorio(id, novoTipo, novaData);
+        controller.editarRelatorio(id, novoTipo, novaData, novoResultado, novaObservacao);
         System.out.println("Relatório atualizado.");
     }
 
@@ -102,6 +132,15 @@ public class RelatorioView {
 
         controller.excluirRelatorio(id);
         System.out.println("Relatório excluído.");
+    }
+
+    private int getProximoIdRelatorio() {
+        // Agora, o ID é obtido do DAO, que sabe a sequência a partir do arquivo
+        return relatorio.dao.RelatorioDao.getProximoId(); 
+    }
+
+    private int getProximoIdPaciente() {
+        return proximoIdPaciente++;
     }
 
     public static void main(String[] args) {
