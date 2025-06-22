@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const PacienteDao = require('./pacienteDao');
 const AgendamentoDao = require("./agendamentoDao");
+const RelatorioDao = require("./relatorioDao"); // Adicionado o DAO de relatório
 
 //Perguntar o motivo de usar o cors
 app.use(cors());
@@ -356,8 +357,9 @@ app.delete('/api/agendamentos/:id', async (req, res) => {
     }
 });
 
+<<<<<<< HEAD
 // GET /api/exames - Listar todos os exames (com filtro opcional por tipo)
-app.get("/api/exames", async (req, res) => {
+app.get("/api/exames", async (req, res)) => {
     try {
         const { tipo } = req.query;
         let exames = [];
@@ -405,6 +407,230 @@ app.get("/api/exames", async (req, res) => {
             error: error.message
         });
     }
+//------------------------------------------------------------------------------------------
+// INÍCIO DO MÓDULO DE RELATÓRIO
+
+const relatorioDao = new RelatorioDao();
+
+// IMPORTANTE: Rotas específicas devem vir antes das rotas genéricas
+// GET /api/relatorios/consolidado/:cpf - Buscar dados consolidados por CPF
+app.get('/api/relatorios/consolidado/:cpf', async (req, res) => {
+    try {
+        const { cpf } = req.params;
+        const dadosConsolidados = await relatorioDao.buscarDadosConsolidadosPorCpf(cpf);
+        
+        if (!dadosConsolidados.paciente) {
+            return res.status(404).json({
+                success: false,
+                message: 'Paciente não encontrado com o CPF informado'
+            });
+        }
+        
+        res.json({
+            success: true,
+            data: dadosConsolidados
+        });
+    } catch (error) {
+        console.error('Erro ao buscar dados consolidados por CPF:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro interno do servidor',
+            error: error.message
+        });
+    }
+});
+
+// GET /api/relatorios/cpf/:cpf - Buscar relatórios por CPF
+app.get('/api/relatorios/cpf/:cpf', async (req, res) => {
+    try {
+        const { cpf } = req.params;
+        const relatorios = await relatorioDao.buscarPorCpf(cpf);
+        
+        res.json({
+            success: true,
+            data: relatorios
+        });
+    } catch (error) {
+        console.error('Erro ao buscar relatórios por CPF:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro interno do servidor',
+            error: error.message
+        });
+    }
+});
+
+// GET /api/relatorios - Listar todos os relatórios
+app.get('/api/relatorios', async (req, res) => {
+    try {
+        const relatorios = await relatorioDao.listarTodos();
+        res.json({
+            success: true,
+            data: relatorios
+        });
+    } catch (error) {
+        console.error('Erro ao listar relatórios:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro interno do servidor',
+            error: error.message
+        });
+    }
+});
+
+// GET /api/relatorios/:id - Buscar relatório por ID
+app.get('/api/relatorios/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const relatorio = await relatorioDao.buscarPorId(id);
+        
+        if (!relatorio) {
+            return res.status(404).json({
+                success: false,
+                message: 'Relatório não encontrado'
+            });
+        }
+        
+        res.json({
+            success: true,
+            data: relatorio
+        });
+    } catch (error) {
+        console.error('Erro ao buscar relatório por ID:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro interno do servidor',
+            error: error.message
+        });
+    }
+});
+
+// POST /api/relatorios - Criar novo relatório
+app.post('/api/relatorios', async (req, res) => {
+    try {
+        const { nome_paciente, cpf, tipo_exame, data_exame, resultado, observacao } = req.body;
+        
+        // Validação básica
+        if (!nome_paciente || !cpf || !tipo_exame || !data_exame || !resultado) {
+            return res.status(400).json({
+                success: false,
+                message: 'Campos obrigatórios: nome_paciente, cpf, tipo_exame, data_exame, resultado'
+            });
+        }
+        
+        const result = await relatorioDao.inserir(nome_paciente, cpf, tipo_exame, data_exame, resultado, observacao || null);
+        
+        res.status(201).json({
+            success: true,
+            message: 'Relatório criado com sucesso',
+            data: {
+                id: result.insertId,
+                nome_paciente,
+                cpf,
+                tipo_exame,
+                data_exame,
+                resultado,
+                observacao: observacao || null
+            }
+        });
+    } catch (error) {
+        console.error('Erro ao criar relatório:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro interno do servidor',
+            error: error.message
+        });
+    }
+});
+
+// PUT /api/relatorios/:id - Atualizar relatório
+app.put('/api/relatorios/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nome_paciente, cpf, tipo_exame, data_exame, resultado, observacao } = req.body;
+        
+        // Validação básica
+        if (!nome_paciente || !cpf || !tipo_exame || !data_exame || !resultado) {
+            return res.status(400).json({
+                success: false,
+                message: 'Campos obrigatórios: nome_paciente, cpf, tipo_exame, data_exame, resultado'
+            });
+        }
+        
+        // Verificar se o relatório existe
+        const relatorioExistente = await relatorioDao.buscarPorId(id);
+        if (!relatorioExistente) {
+            return res.status(404).json({
+                success: false,
+                message: 'Relatório não encontrado'
+            });
+        }
+        
+        const result = await relatorioDao.atualizar(id, nome_paciente, cpf, tipo_exame, data_exame, resultado, observacao || null);
+        
+        res.json({
+            success: true,
+            message: 'Relatório atualizado com sucesso',
+            data: {
+                id,
+                nome_paciente,
+                cpf,
+                tipo_exame,
+                data_exame,
+                resultado,
+                observacao: observacao || null
+            }
+        });
+    } catch (error) {
+        console.error('Erro ao atualizar relatório:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro interno do servidor',
+            error: error.message
+        });
+    }
+});
+
+// DELETE /api/relatorios/:id - Excluir relatório
+app.delete('/api/relatorios/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        // Verificar se o relatório existe
+        const relatorioExistente = await relatorioDao.buscarPorId(id);
+        if (!relatorioExistente) {
+            return res.status(404).json({
+                success: false,
+                message: 'Relatório não encontrado'
+            });
+        }
+        
+        await relatorioDao.excluir(id);
+        
+        res.json({
+            success: true,
+            message: 'Relatório excluído com sucesso'
+        });
+    } catch (error) {
+        console.error('Erro ao excluir relatório:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro interno do servidor',
+            error: error.message
+        });
+    }
+});
+
+// Rota para a página de relatório por CPF
+app.get("/public/relatorio/relatorioPorCpf", (req, res) => {
+    res.render("relatorio/relatorioPorCpf");
+});
+
+// FIM DO MÓDULO DE RELATÓRIO
+//------------------------------------------------------------------------------------------
+
+app.get("/public/exames/exames", (req, res) => {
+>>>>>>> main
 });
 
 // POST /api/exames - Criar novo exame (determina o tipo pelo body)
@@ -684,7 +910,7 @@ app.get("/public/relatorio/dao/RelatorioDAO", (req, res) => {
 app.post("/cliente", (req, res) => {
     const {nome, cnpj, dataFundacao} = req.body;
     
-    console.log("Nome: " + nome + "\nCNPJ: " + cnpj + "\nData de fundação: " + dataFundacao);
+    console.log("Nome: " + nome + "\nCNPJ: " + cnpj + "\nData de fundação: " + dataFundacao);
     res.send("Cliente cadastrado com sucesso.");
 })
 
@@ -697,22 +923,23 @@ app.get("/editarClientes/:idCliente", (req, res) => {
 app.put("/cliente", (req, res) => {
     const {nome, cnpj, dataFundacao} = req.body;
     
-    console.log("Nome: " + nome + "\nCNPJ: " + cnpj + "\nData de fundação: " + dataFundacao);
+    console.log("Nome: " + nome + "\nCNPJ: " + cnpj + "\nData de fundação: " + dataFundacao);
     res.send("Cliente atualizado com sucesso.");
 })
 
 app.delete("/cliente", (req, res) => {
     const {nome, cnpj, dataFundacao} = req.body;
     
-    console.log("Nome: " + nome + "\nCNPJ: " + cnpj + "\nData de fundação: " + dataFundacao);
-    res.send("Cliente excluído com sucesso.");
+    console.log("Nome: " + nome + "\nCNPJ: " + cnpj + "\nData de fundação: " + dataFundacao);
+    res.send("Cliente excluído com sucesso.");
 })
 
 app.get("/fornecedores", (req, res) => {
-    res.end("<html><head><title>Minha primeira página</title></head><body><h1>Minha primeira pagina</h1></body></html>");
+    res.end("<html><head><title>Minha primeira página</title></head><body><h1>Minha primeira pagina</h1></body></html>");
 });
 */
 app.listen(3000, () => {
     console.log("Servidor rodando na porta 3000");
     console.log("API disponível em: http://localhost:3000");
 });
+
