@@ -1,13 +1,14 @@
 const mysql = require('mysql2/promise');
 
-const { format: dateFnsFormat } = require('date-fns/format');
+// Importação correta do date-fns
+const { format } = require('date-fns');
 
 function formatarData(data) {
-    return dateFnsFormat(new Date(data), 'dd/MM/yyyy');
+    return format(new Date(data), 'dd/MM/yyyy');
 }
 
 function formataDataEUA(data) {
-    return dateFnsFormat(new Date(data), 'yyyy/MM/dd');
+    return format(new Date(data), 'yyyy/MM/dd');
 }
 
 class PacienteDao {
@@ -71,9 +72,9 @@ class PacienteDao {
         try {
             connection = await this.getConnection();
             const sql = `UPDATE paciente 
-                         SET nome = ?, cpf = ?, telefone = ?, endereco = ?, 
-                             observacoes = ?, data_nascimento = ?
-                         WHERE id = ?`;
+                          SET nome = ?, cpf = ?, telefone = ?, endereco = ?, 
+                              observacoes = ?, data_nascimento = ?
+                          WHERE id = ?`;
             const [result] = await connection.execute(sql, [nome, cpf, telefone, endereco, observacoes, dataNascimento, id]);
             return result;
         } catch (error) {
