@@ -68,7 +68,7 @@ class ExamesController {
             if ($resultado) {
                 echo "<script>
                     alert('Exame cadastrado com sucesso!');
-                    window.location.href = '../exames.php';
+                    window.location.href = '../gestaoExames.php';
                 </script>";
                 return true;
             } else {
@@ -395,9 +395,11 @@ class ExamesController {
     }
 }
 
+// Processamento automático de requisições POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $controller = new ExamesController();
     $controller->processarRequisicao();
 }
 
 ?>
+

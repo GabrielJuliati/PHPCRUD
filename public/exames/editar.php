@@ -14,7 +14,7 @@
 
     <?php
         include('../../modelo/nav.php');
-        require_once(__DIR__."/dao/ExamesDao.php");
+        require_once __DIR__.'/./dao/ExamesDao.php';
 
         $exame = null;
         $erro = '';
@@ -62,7 +62,7 @@
                     <div class="alert alert-danger">
                         <i class="bi bi-exclamation-triangle"></i> <?= htmlspecialchars($erro) ?>
                         <br><br>
-                        <a href="exames.php" class="btn btn-primary">
+                        <a href="gestaoAgendamento.php" class="btn btn-primary">
                             <i class="bi bi-arrow-left"></i> Voltar para Gestão
                         </a>
                     </div>
@@ -137,7 +137,7 @@
 
                                     <!-- Form Actions -->
                                     <div class="d-flex justify-content-between">
-                                        <a href="exames.php" class="btn btn-secondary">
+                                        <a href="gestaoAgendamento.php" class="btn btn-secondary">
                                             <i class="bi bi-arrow-left"></i> Voltar
                                         </a>
                                         <button type="submit" class="btn btn-success">

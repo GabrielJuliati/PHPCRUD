@@ -15,7 +15,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="icon" href="../faviconSPS.png" type="image/x-icon">
     <link rel="stylesheet" href="../CSS/styleCP.css">
     <title>Gestão de Exames</title>
 </head>
@@ -24,11 +23,12 @@
 
     <?php
         include('../../modelo/nav.php');
-        require_once './controller/ExamesController.php';
+        require_once 'controller/ExamesController.php';
 
         // Handle exam deletion
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['acao'] === 'excluir') {
-            // This will be handled by the controller
+            $controller = new ExamesController();
+            $controller->processarRequisicao();
         }
 
         // Get filter parameter
@@ -57,10 +57,10 @@
                                 <i class="bi bi-clipboard-data"></i> Gestão de Exames
                             </h3>
                             <div class="d-flex gap-2">
-                                <a href="cadastro.php" class="btn btn-success">
+                                <a href="cadastro_exame_dinamico.php" class="btn btn-success">
                                     <i class="bi bi-plus-circle"></i> Novo Exame
                                 </a>
-                                <a href="../agendamento/agendamentos.php" class="btn btn-secondary">
+                                <a href="gestaoAgendamento.php" class="btn btn-secondary">
                                     <i class="bi bi-calendar-check"></i> Agendamentos
                                 </a>
                             </div>
@@ -112,16 +112,16 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <div class="btn-group" role="group">
-                                    <a href="exames.php" class="btn <?= empty($filtroTipo) ? 'btn-primary' : 'btn-outline-primary' ?>">
+                                    <a href="gestaoExames.php" class="btn <?= empty($filtroTipo) ? 'btn-primary' : 'btn-outline-primary' ?>">
                                         <i class="bi bi-list"></i> Todos
                                     </a>
-                                    <a href="exames.php?tipo=dengue" class="btn <?= $filtroTipo === 'dengue' ? 'btn-danger' : 'btn-outline-danger' ?>">
+                                    <a href="gestaoExames.php?tipo=dengue" class="btn <?= $filtroTipo === 'dengue' ? 'btn-danger' : 'btn-outline-danger' ?>">
                                         <i class="bi bi-bug"></i> Dengue
                                     </a>
-                                    <a href="exames.php?tipo=abo" class="btn <?= $filtroTipo === 'abo' ? 'btn-info' : 'btn-outline-info' ?>">
+                                    <a href="gestaoExames.php?tipo=abo" class="btn <?= $filtroTipo === 'abo' ? 'btn-info' : 'btn-outline-info' ?>">
                                         <i class="bi bi-droplet"></i> ABO
                                     </a>
-                                    <a href="exames.php?tipo=covid" class="btn <?= $filtroTipo === 'covid' ? 'btn-warning' : 'btn-outline-warning' ?>">
+                                    <a href="gestaoExames.php?tipo=covid" class="btn <?= $filtroTipo === 'covid' ? 'btn-warning' : 'btn-outline-warning' ?>">
                                         <i class="bi bi-virus"></i> COVID-19
                                     </a>
                                 </div>
@@ -168,7 +168,7 @@
                                                     Nenhum exame cadastrado ainda.
                                                 <?php endif; ?>
                                                 <br>
-                                                <a href="cadastro.php" class="btn btn-primary mt-2">
+                                                <a href="cadastro_exame_dinamico.php" class="btn btn-primary mt-2">
                                                     <i class="bi bi-plus-circle"></i> Cadastrar Primeiro Exame
                                                 </a>
                                             </td>
@@ -242,7 +242,10 @@
                                                 </td>
                                                 <td>
                                                     <div class="btn-group btn-group-sm" role="group">
-                                                        <a href="editar.php?tipo=<?= strtolower(str_replace('-', '', $exame->tipoExame)) ?>&id=<?= $exame->getId() ?>" 
+                                                        <a href="editar.php?tipo=<?= 
+                                                            $exame->tipoExame === 'Dengue' ? 'dengue' : 
+                                                            ($exame->tipoExame === 'ABO' ? 'abo' : 'covid') 
+                                                        ?>&id=<?= $exame->getId() ?>" 
                                                            class="btn btn-outline-primary" 
                                                            title="Editar exame">
                                                             <i class="bi bi-pencil"></i>
@@ -299,3 +302,4 @@
 
 </body>
 </html>
+
