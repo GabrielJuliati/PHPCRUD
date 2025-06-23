@@ -47,8 +47,6 @@ if (isset($_POST['cadastrar'])) {
     } catch (PDOException $e) {
         echo "Erro: " . $e->getMessage();
     }
-} else {
-    echo "Acesso inválido.";
 }
 
 if(isset($_POST['atualizar'])) { 
