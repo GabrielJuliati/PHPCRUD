@@ -57,10 +57,10 @@
                                 <i class="bi bi-clipboard-data"></i> Gestão de Exames
                             </h3>
                             <div class="d-flex gap-2">
-                                <a href="cadastro_exame_dinamico.php" class="btn btn-success">
+                                <a href="cadastro.php" class="btn btn-success">
                                     <i class="bi bi-plus-circle"></i> Novo Exame
                                 </a>
-                                <a href="gestaoAgendamento.php" class="btn btn-secondary">
+                                <a href="../agendamento/agendamentos.php" class="btn btn-secondary">
                                     <i class="bi bi-calendar-check"></i> Agendamentos
                                 </a>
                             </div>
@@ -112,16 +112,16 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <div class="btn-group" role="group">
-                                    <a href="gestaoExames.php" class="btn <?= empty($filtroTipo) ? 'btn-primary' : 'btn-outline-primary' ?>">
+                                    <a href="exames.php" class="btn <?= empty($filtroTipo) ? 'btn-primary' : 'btn-outline-primary' ?>">
                                         <i class="bi bi-list"></i> Todos
                                     </a>
-                                    <a href="gestaoExames.php?tipo=dengue" class="btn <?= $filtroTipo === 'dengue' ? 'btn-danger' : 'btn-outline-danger' ?>">
+                                    <a href="exames.php?tipo=dengue" class="btn <?= $filtroTipo === 'dengue' ? 'btn-danger' : 'btn-outline-danger' ?>">
                                         <i class="bi bi-bug"></i> Dengue
                                     </a>
-                                    <a href="gestaoExames.php?tipo=abo" class="btn <?= $filtroTipo === 'abo' ? 'btn-info' : 'btn-outline-info' ?>">
+                                    <a href="exames.php?tipo=abo" class="btn <?= $filtroTipo === 'abo' ? 'btn-info' : 'btn-outline-info' ?>">
                                         <i class="bi bi-droplet"></i> ABO
                                     </a>
-                                    <a href="gestaoExames.php?tipo=covid" class="btn <?= $filtroTipo === 'covid' ? 'btn-warning' : 'btn-outline-warning' ?>">
+                                    <a href="exames.php?tipo=covid" class="btn <?= $filtroTipo === 'covid' ? 'btn-warning' : 'btn-outline-warning' ?>">
                                         <i class="bi bi-virus"></i> COVID-19
                                     </a>
                                 </div>
@@ -302,4 +302,3 @@
 
 </body>
 </html>
-

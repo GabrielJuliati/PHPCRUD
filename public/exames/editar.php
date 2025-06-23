@@ -62,8 +62,8 @@
                     <div class="alert alert-danger">
                         <i class="bi bi-exclamation-triangle"></i> <?= htmlspecialchars($erro) ?>
                         <br><br>
-                        <a href="gestaoAgendamento.php" class="btn btn-primary">
-                            <i class="bi bi-arrow-left"></i> Voltar para Gestão
+                        <a href="exames.php" class="btn btn-primary">
+                            <i class="bi bi-arrow-left"></i> Voltar para Exames
                         </a>
                     </div>
                 <?php else: ?>
@@ -137,7 +137,7 @@
 
                                     <!-- Form Actions -->
                                     <div class="d-flex justify-content-between">
-                                        <a href="gestaoAgendamento.php" class="btn btn-secondary">
+                                        <a href="exames.php" class="btn btn-secondary">
                                             <i class="bi bi-arrow-left"></i> Voltar
                                         </a>
                                         <button type="submit" class="btn btn-success">
@@ -412,4 +412,3 @@
 
 </body>
 </html>
-

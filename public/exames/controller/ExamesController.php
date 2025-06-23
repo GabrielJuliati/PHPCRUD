@@ -68,7 +68,7 @@ class ExamesController {
             if ($resultado) {
                 echo "<script>
                     alert('Exame cadastrado com sucesso!');
-                    window.location.href = '../gestaoExames.php';
+                    window.location.href = '../exames.php';
                 </script>";
                 return true;
             } else {
@@ -402,4 +402,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 ?>
-
