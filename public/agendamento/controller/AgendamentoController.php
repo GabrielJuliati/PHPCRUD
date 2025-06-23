@@ -35,13 +35,19 @@ if (isset($_POST['cadastrar'])) {
 
             if ($stmt_agendamento->execute()) {
                 // Redirect on success
+                $_SESSION['mensagem'] = 'Agendamento cadastrado com sucesso!';
+                $_SESSION['tipo_mensagem'] = 'success';
                 header('Location: ../agendamentos.php');
                 exit();
             } else {
-                echo "Erro ao cadastrar agendamento.";
+                $_SESSION['erro'] = 'Erro ao cadastrar agendamento.';
+                header('Location: ../cadastro.php');
+                exit();
             }
         } else {
-            echo "CPF não encontrado. Por favor, verifique o CPF e tente novamente.";
+            $_SESSION['erro'] = 'CPF não encontrado. Por favor, verifique o CPF e tente novamente.';
+            header('Location: ../cadastro.php');
+            exit();
         }
 
     } catch (PDOException $e) {
