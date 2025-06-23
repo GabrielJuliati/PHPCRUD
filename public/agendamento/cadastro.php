@@ -1,9 +1,13 @@
 <?php session_start(); 
 
+    $erro = $_SESSION['erro'] ?? null;
+
     if (!isset($_SESSION["id"])) {
         header("Location: ../acesso/login.php");
         exit;
     }
+
+    
 ?>
 
 <!DOCTYPE html>
@@ -27,6 +31,12 @@
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <h1 class="text-center m-5">Agendamento</h1>
+                <?php if ($erro): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <?= htmlspecialchars($erro, ENT_QUOTES, 'UTF-8') ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
                 <div>
                     <form action="controller/AgendamentoController.php" method="post">
                         <div class="mt-3">

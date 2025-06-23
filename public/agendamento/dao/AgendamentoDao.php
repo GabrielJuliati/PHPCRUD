@@ -109,7 +109,6 @@ class AgendamentoDao {
             
             return null;
         } catch (Exception $ex) {
-            echo "<p>Erro ao buscar agendamento por ID: " . $ex->getMessage() . "</p>";
             return null;
         }
     }
