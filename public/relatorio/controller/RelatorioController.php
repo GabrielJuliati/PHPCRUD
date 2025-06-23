@@ -1,4 +1,5 @@
 <?php
+// relatorio/controller/RelatorioController.php
 require_once(__DIR__ . '/../dao/RelatorioDAO.php');
 
 class RelatorioController {
@@ -15,9 +16,12 @@ class RelatorioController {
     }
 
     public static function adicionar($dados) {
+        // Limpar o CPF removendo qualquer caractere não numérico
+        $cpfLimpo = preg_replace('/\D/', '', $dados['cpf']);
+
         RelatorioDAO::adicionar(
             $dados['nome'],
-            $dados['cpf'],
+            $cpfLimpo, // Passa o CPF limpo para o DAO
             $dados['tipo_exame'],
             $dados['data_exame'],
             $dados['resultado'],
@@ -27,10 +31,13 @@ class RelatorioController {
     }
 
     public static function atualizar($dados) {
+        // Limpar o CPF removendo qualquer caractere não numérico também na atualização
+        $cpfLimpo = preg_replace('/\D/', '', $dados['cpf']);
+
         RelatorioDAO::atualizar(
             $dados['id'],
             $dados['nome'],
-            $dados['cpf'],
+            $cpfLimpo, // Passa o CPF limpo para o DAO
             $dados['tipo_exame'],
             $dados['data_exame'],
             $dados['resultado'],

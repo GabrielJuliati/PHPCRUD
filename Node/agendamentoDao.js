@@ -129,4 +129,3 @@ class AgendamentoDao {
 }
 
 module.exports = AgendamentoDao;
-
