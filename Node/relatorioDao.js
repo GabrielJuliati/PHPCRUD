@@ -119,6 +119,43 @@ class RelatorioDao {
     }
 
     /**
+     * Busca todos os pacientes com seus agendamentos
+     * @returns {Array} Lista de todos os pacientes com agendamentos
+     */
+    async buscarTodosPacientesComAgendamentos() {
+        let connection;
+        try {
+            connection = await this.getConnection();
+            
+            // Query para buscar todos os pacientes com seus agendamentos (LEFT JOIN para incluir pacientes sem agendamentos)
+            const sql = `
+                SELECT 
+                    p.id AS paciente_id,
+                    p.nome AS paciente_nome,
+                    p.CPF AS paciente_cpf,
+                    p.data_nascimento AS paciente_data_nascimento,
+                    p.telefone AS paciente_telefone,
+                    p.endereco AS paciente_endereco,
+                    p.observacoes AS paciente_observacoes,
+                    a.id AS agendamento_id,
+                    a.data_consulta AS agendamento_data_consulta,
+                    a.tipo_exame AS agendamento_tipo_exame
+                FROM paciente p
+                LEFT JOIN agendamento a ON p.id = a.paciente_id
+                ORDER BY p.id, a.id
+            `;
+            
+            const [rows] = await connection.execute(sql);
+            return rows;
+        } catch (error) {
+            console.error('Erro ao buscar todos os pacientes com agendamentos:', error);
+            throw error;
+        } finally {
+            if (connection) await connection.end();
+        }
+    }
+
+    /**
      * Gera relatório consolidado de um paciente por CPF
      * @param {string} cpf - CPF do paciente
      * @returns {Object} Relatório consolidado do paciente
@@ -324,7 +361,7 @@ class RelatorioDao {
     }
 
     /**
-     * Atualiza um relatório existente
+     * Atualizar um relatório existente
      * @param {Object} dados - Dados do relatório
      * @returns {Object} Resultado da operação
      */
