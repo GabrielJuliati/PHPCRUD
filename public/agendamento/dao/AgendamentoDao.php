@@ -1,9 +1,10 @@
 <?php
 require_once __DIR__ . '/../../connection/Connection.php';
-require_once("Agendamento.php");
+
+require_once(__DIR__ . '/../model/Agendamento.php');
 
 class AgendamentoDao {
-
+    
     private $apiUrl = 'http://localhost:3000/api/agendamentos';
 
     private function makeApiRequest($url, $method = 'GET', $data = null) {
