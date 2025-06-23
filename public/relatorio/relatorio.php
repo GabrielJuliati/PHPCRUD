@@ -107,7 +107,7 @@ if (isset($_GET["buscar_dados_api"]) && !empty($_GET["cpf_busca_api"])) {
     $response = @file_get_contents($url_api);
 
     if ($response === FALSE) {
-        $mensagem_api = "Erro ao conectar com a API Node.js. Verifique se o servidor Node.js está rodando.";
+        $mensagem_api = "Paciente não encontrado com o CPF informado.";
     } else {
         $dados_api = json_decode($response, true);
         if ($dados_api && isset($dados_api["success"]) && $dados_api["success"]) {
@@ -401,10 +401,6 @@ if (isset($_GET["buscar_dados_api"]) && !empty($_GET["cpf_busca_api"])) {
                             </tbody>
                         </table>
                     </div>
-                </div>
-            <?php elseif (isset($_GET["buscar_dados_api"])) : ?>
-                <div class="alert alert-info mt-4">
-                    Paciente não encontrado com o CPF informado.
                 </div>
             <?php endif; ?>
 
