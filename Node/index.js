@@ -918,10 +918,6 @@ app.delete('/api/relatorios/:id', async (req, res) => {
     }
 });
 
-// Rota para a página de relatório por CPF
-app.get("/public/relatorio/relatorioPorCpf", (req, res) => {
-    res.render("relatorio/relatorioPorCpf");
-});
 
 // FIM DO MÓDULO DE RELATÓRIO
 //------------------------------------------------------------------------------------------
