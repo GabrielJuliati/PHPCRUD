@@ -1,15 +1,17 @@
 package relatorio.model;
 
+/**
+ * Representa um Relatório com detalhes de um exame e paciente.
+ */
 public class Relatorio {
     private int id;
     private Paciente paciente;
     private String tipoExame;
     private String dataExame;
-    private String cpfPaciente; // NOVO CAMPO: CPF do paciente
-    private String resultado;   // NOVO CAMPO: Resultado do exame
-    private String observacao;  // NOVO CAMPO: Observações
+    private String cpfPaciente;
+    private String resultado;
+    private String observacao;
 
-    // Construtor atualizado com os novos campos
     public Relatorio(int id, Paciente paciente, String tipoExame, String dataExame,
                      String cpfPaciente, String resultado, String observacao) {
         this.id = id;
@@ -24,8 +26,6 @@ public class Relatorio {
     public int getId() {
         return id;
     }
-
-    // Não há setId(int id) público pois o ID é gerado internamente e não deve ser alterado após criação.
 
     public Paciente getPaciente() {
         return paciente;
@@ -47,7 +47,6 @@ public class Relatorio {
         this.dataExame = dataExame;
     }
 
-    // NOVOS GETTERS E SETTERS
     public String getCpfPaciente() {
         return cpfPaciente;
     }
@@ -76,10 +75,10 @@ public class Relatorio {
     public String toString() {
         return "ID: " + id +
                " | Paciente: " + paciente.getNome() +
-               " | CPF: " + cpfPaciente + // Inclui o CPF no toString
+               " | CPF: " + cpfPaciente +
                " | Tipo Exame: " + tipoExame +
                " | Data Exame: " + dataExame +
-               " | Resultado: " + resultado + // Inclui o resultado
-               " | Observação: " + (observacao != null && !observacao.isEmpty() ? observacao : "N/A"); // Inclui observação
+               " | Resultado: " + resultado +
+               " | Observação: " + (observacao != null && !observacao.isEmpty() ? observacao : "N/A");
     }
 }

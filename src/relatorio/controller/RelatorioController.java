@@ -4,14 +4,17 @@ import java.util.List;
 
 import relatorio.model.Relatorio;
 import relatorio.service.RelatorioService;
-import relatorio.dao.RelatorioDao; // <--- DESCOMENTE OU ADICIONE ESTA LINHA!
+import relatorio.dao.RelatorioDao;
 
+/**
+ * Controlador para operações relacionadas a Relatórios.
+ * Gerencia a interação entre a View e o Serviço.
+ */
 public class RelatorioController {
     private RelatorioService service;
 
     public RelatorioController() {
-        // Agora, RelatorioDao será resolvido corretamente
-        this.service = new RelatorioService(new RelatorioDao()); 
+        this.service = new RelatorioService(new RelatorioDao());
     }
 
     public void adicionarRelatorio(Relatorio relatorio) {
@@ -34,5 +37,12 @@ public class RelatorioController {
     public void excluirRelatorio(int id) {
         Relatorio relatorio = service.buscarPorId(id);
         service.excluir(relatorio);
+    }
+
+    /**
+     * Inicia o processo de geração de relatórios aleatórios.
+     */
+    public void gerarRelatoriosAleatorios(int quantidade) {
+        service.gerarRelatoriosAleatorios(quantidade);
     }
 }
